@@ -41,7 +41,11 @@ public class Booking {
     private Integer trang_thai;
 	
     private Date booking_at;
-    
+
+    private Integer pt_thanh_toan;
+
+    private String ghi_chu;
+
     @PrePersist
     public void onCreate() {
     	this.booking_at = new Date();

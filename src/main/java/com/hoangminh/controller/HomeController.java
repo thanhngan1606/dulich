@@ -7,9 +7,11 @@ import java.util.Date;
 import java.util.List;
 
 import com.hoangminh.dto.*;
+import com.hoangminh.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,15 +39,18 @@ public class HomeController {
 
 	@Autowired
 	private TourService tourService;
-	
+
 	@Autowired
 	private TourStartRepository tourStartRepository;
 
 	@Autowired
 	private ImageRepository imageRepository;
-	
+
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private BookingService bookingService;
 
 	@GetMapping("")
 	ModelAndView index() {
@@ -54,18 +59,18 @@ public class HomeController {
 		Page<TourDTO> tourPage = this.tourService.findAllTour(null, null, null, null, null, PageRequest.of(0, 6));
 
 		List<TourDTO> tours = tourPage.getContent();
-		
+
 		mdv.addObject("tours", tours);
-		
-		
+
+
 		return mdv;
 	}
 
 	@GetMapping("/tour/trong-nuoc")
 	ModelAndView tourTrongNuoc(@RequestParam(value = "page", required = false, defaultValue = "10") Integer page,
-			@RequestParam(value = "ten_tour", required = false) String ten_tour,
-			@RequestParam(value = "gia_tour", required = false) Long gia_tour,
-			@RequestParam(value = "ngay_khoi_hanh", required = false) String ngay_khoi_hanh) {
+							   @RequestParam(value = "ten_tour", required = false) String ten_tour,
+							   @RequestParam(value = "gia_tour", required = false) Long gia_tour,
+							   @RequestParam(value = "ngay_khoi_hanh", required = false) String ngay_khoi_hanh) {
 		ModelAndView mdv = new ModelAndView("user/tour1");
 		Long gia_tour_from = null;
 		Long gia_tour_to = null;
@@ -95,9 +100,9 @@ public class HomeController {
 
 	@GetMapping("/tour/ngoai-nuoc")
 	ModelAndView tourNgoaiNuoc(@RequestParam(value = "page", required = false, defaultValue = "10") Integer page,
-			@RequestParam(value = "ten_tour", required = false) String ten_tour,
-			@RequestParam(value = "gia_tour", required = false) Long gia_tour,
-			@RequestParam(value = "ngay_khoi_hanh", required = false) String ngay_khoi_hanh) {
+							   @RequestParam(value = "ten_tour", required = false) String ten_tour,
+							   @RequestParam(value = "gia_tour", required = false) Long gia_tour,
+							   @RequestParam(value = "ngay_khoi_hanh", required = false) String ngay_khoi_hanh) {
 
 		Long gia_tour_from = null;
 		Long gia_tour_to = null;
@@ -134,26 +139,26 @@ public class HomeController {
 		TourDTO tour = this.tourService.findTourById(id);
 		List<Image> imageList = this.imageRepository.findByTourId(id);
 
-		
+
 		List<TourStartDTO> listDate = this.tourStartRepository.getDateStartByTourId(id);
-		
+
 		mdv.addObject("tour", tour);
 		mdv.addObject("listDate", listDate);
 		mdv.addObject("imageList", imageList);
 
 		return mdv;
 	}
-	
+
 	@GetMapping("/login")
-	ModelAndView login(HttpServletRequest request) {
+	ModelAndView login() {
 		if(this.userService.checkLogin()) {
 			return this.account();
 		}
 		ModelAndView mdv = new ModelAndView("user/login");
-		
+
 		return mdv;
 	}
-	
+
 	@GetMapping("/register")
 	ModelAndView register() {
 
@@ -162,19 +167,19 @@ public class HomeController {
 		}
 
 		ModelAndView mdv = new ModelAndView("user/register");
-		
+
 		return mdv;
 	}
-	
-	
+
+
 	@PostMapping("/login")
 	ModelAndView loginAction(LoginDTO login,HttpServletRequest request) {
 
-		
+
 		String uriString = request.getRequestURI();
-		
+
 		ModelAndView mdv = new ModelAndView("user/account");
-		
+
 		if(!this.userService.login(login)) {
 			ModelAndView mdvErr = new ModelAndView("user/login");
 			mdvErr.addObject("err", "Sai thông tin đăng nhập");
@@ -182,16 +187,16 @@ public class HomeController {
 		}
 
 		mdv.addObject("user", SessionUtilities.getUser());
-		
+
 		return mdv;
 	}
-	
+
 	@PostMapping("/register")
 	ModelAndView registerAction(RegisterDTO user) {
 
 
 		ModelAndView mdv = new ModelAndView("user/login");
-		
+
 		if(!this.userService.register(user)) {
 			ModelAndView mdvErr = new ModelAndView("user/register");
 			mdvErr.addObject("err", "Đăng ký thất bại");
@@ -207,16 +212,16 @@ public class HomeController {
 		SessionUtilities.setUsername(null);
 		return this.index();
 	}
-	
+
 	@GetMapping("/account")
 	ModelAndView account() {
 		ModelAndView mdv = new ModelAndView("user/account");
 
 		if(SessionUtilities.getUsername()==null) {
-			ModelAndView loginView = new ModelAndView("user/login");
+			ModelAndView loginView = new ModelAndView("redirect:login");
 			return loginView;
 		}
-		
+
 		mdv.addObject("user", SessionUtilities.getUser());
 
 		return mdv;
@@ -227,7 +232,7 @@ public class HomeController {
 
 		ModelAndView mdv = new ModelAndView();
 		if(!this.userService.checkLogin()) {
-			mdv.setViewName("user/login");
+			mdv.setViewName("redirect:login");
 			return mdv;
 		}
 		mdv.setViewName("user/changepassword");
@@ -262,6 +267,45 @@ public class HomeController {
 		}else {
 			return this.account().addObject("message","Có lỗi xảy ra!");
 		}
+
+	}
+
+	@GetMapping("/tour/booking/{id}")
+	ModelAndView booking(@PathVariable("id") Long tour_id,
+						 @RequestParam String ngay_khoi_hanh,
+						 @RequestParam Integer so_nguoi,
+						 @RequestParam Long tong_tien) {
+
+		log.info("ngay khoi hanh log: {}",ngay_khoi_hanh);
+		ModelAndView mdv = new ModelAndView("user/booking-checkout");
+
+		if(SessionUtilities.getUsername()==null) {
+			ModelAndView loginView = new ModelAndView("redirect:/login");
+			return loginView;
+		}
+
+		if(this.tourService.findTourById(tour_id)==null) {
+			return new ModelAndView("user/error");
+		}
+
+		DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
+		Date ngay_khoi_hanh_value = null;
+		try {
+			ngay_khoi_hanh_value = ngay_khoi_hanh != null ? format.parse(ngay_khoi_hanh.split(" ")[0]) : null;
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		BookingDTO bookingDTO = new BookingDTO();
+
+		mdv.addObject("user",SessionUtilities.getUser());
+		mdv.addObject("ngay_khoi_hanh",ngay_khoi_hanh_value);
+		mdv.addObject("tour",this.tourService.findTourById(tour_id));
+		mdv.addObject("so_nguoi",so_nguoi);
+		mdv.addObject("tong_tien",tong_tien);
+
+		return mdv;
 
 	}
 

@@ -26,4 +26,7 @@ public class BookingDTO {
     
     private Integer trang_thai;
 
+    private Integer pt_thanh_toan;
+
+    private String ghi_chu;
 }

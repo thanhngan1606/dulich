@@ -18,12 +18,12 @@ import com.hoangminh.service.BookingService;
 @Service
 public class BookingServiceImpl implements BookingService{
 
-	@Autowired 
+	@Autowired
 	private BookingRepository bookingRepository;
-	
+
 	@Autowired
 	private TourRepository tourRepository;
-	
+
 	@Override
 	public Page<BookingDTO> findAllBooking(Integer trang_thai,String ten_tour,Pageable pageable) {
 		return this.bookingRepository.findAllBooking(trang_thai, ten_tour, pageable);
@@ -41,25 +41,28 @@ public class BookingServiceImpl implements BookingService{
 
 	@Override
 	public boolean addNewBooking(BookingDTO newBooking) {
-		
-		
+
+
 		BookingDTO checkBooking  = this.bookingRepository.findBookingByUserId(newBooking.getUser_id());
 		if(checkBooking!=null) {
 			return false;
 		}
-		
+
 		TourDTO tourDTO = this.tourRepository.findTourById(newBooking.getTour_id());
-		
+
 		Booking booking = new Booking();
 		booking.setSo_luong_nguoi(newBooking.getSo_luong_nguoi());
 		booking.setNgay_khoi_hanh(newBooking.getNgay_khoi_hanh());
 		booking.setTong_tien(tourDTO.getGia_tour()*newBooking.getSo_luong_nguoi());
 		booking.setTour_id(newBooking.getTour_id());
 		booking.setUser_id(newBooking.getUser_id());
+		booking.setSo_luong_nguoi(newBooking.getSo_luong_nguoi());
+		booking.setGhi_chu(newBooking.getGhi_chu());
+		booking.setPt_thanh_toan(newBooking.getPt_thanh_toan());
 		booking.setTrang_thai(0);
-		
+
 		this.bookingRepository.save(booking);
-		
+
 		return true;
 	}
 
@@ -67,14 +70,14 @@ public class BookingServiceImpl implements BookingService{
 	@Override
 	public boolean approveBooking(Long bookingId,Integer trang_thai) {
 		Optional<Booking> booking  = this.bookingRepository.findById(bookingId);
-		
+
 		if(booking.isPresent()) {
 			Booking bookingUpdated = booking.get();
 			bookingUpdated.setTrang_thai(trang_thai);
 			this.bookingRepository.save(bookingUpdated);
 			return true;
 		}
-		
+
 		return false;
 	}
 
