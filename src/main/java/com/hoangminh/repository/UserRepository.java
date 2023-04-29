@@ -15,13 +15,16 @@ import com.hoangminh.entity.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long>{
 	
-////	@Query(value="select u from user")
+		@Query(value="select u from User u")
 		List<User> findAll();
-////	
-////	@Query(value="select u from user where u.id = :id")
-		Optional<User> findById( Long id);
-//	
-////	@Query(value="select u from user where u.username = :username")
-		Optional<User> findByUsername(String username);
 	
+		@Query(value="select u from User u where u.id = :id")
+		Optional<User> findById(@Param("id") Long id);
+
+		@Query(value="select u from User u where u.username = :username")
+		Optional<User> findByUsername(@Param("username")String username);
+		
+		@Query(value="select u from User u where u.email = :email")
+		User getUserByEmail(@Param("email") String email);
+		
 }

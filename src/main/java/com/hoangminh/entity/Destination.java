@@ -25,7 +25,4 @@ public class Destination {
 	
 	private String country;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="loai_tour_id",nullable = false)
-	private LoaiTour loai_tour;
 }

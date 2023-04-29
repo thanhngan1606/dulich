@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserDTO {
 
+	private Long id;
+	
 	private String username;
 	
 	private String ho_ten;
@@ -23,5 +25,5 @@ public class UserDTO {
 	
 	private String dia_chi;
 
-	private USER_ROLE role;
+	private Integer role;
 }

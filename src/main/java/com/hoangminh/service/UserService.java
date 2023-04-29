@@ -3,9 +3,13 @@ package com.hoangminh.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.hoangminh.dto.ChangePasswordDTO;
+import com.hoangminh.dto.UpdateUserDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.hoangminh.dto.LoginDTO;
+import com.hoangminh.dto.RegisterDTO;
 import com.hoangminh.entity.User;
 
 public interface UserService {
@@ -13,6 +17,10 @@ public interface UserService {
 	public User findUserById(Long id);
 	public User findUserByUsername(String username);
 	public boolean saveUser(User user);
-	public boolean updateUser(User user,Long id);
+	public boolean login(LoginDTO user);
+	public boolean register(RegisterDTO user);
+	public boolean updateUser(UpdateUserDTO updateUserDTO);
 	public boolean deleteUserById(Long id);
+	public boolean checkLogin();
+	public boolean changePassword(ChangePasswordDTO changePasswordDTO);
 }

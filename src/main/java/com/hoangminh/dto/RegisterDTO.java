@@ -25,7 +25,7 @@ public class RegisterDTO {
 	
 	private String dia_chi;
 
-	private USER_ROLE role;
+	private Integer role;
 
 
 }
