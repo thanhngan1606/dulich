@@ -13,12 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.hoangminh.entity.Image;
@@ -38,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 public class HomeController {
 
 	@Autowired
-	private TourService tourService;
+	public TourService tourService;
 
 	@Autowired
 	private TourStartRepository tourStartRepository;
@@ -51,6 +46,10 @@ public class HomeController {
 
 	@Autowired
 	private BookingService bookingService;
+
+	@Autowired
+	private HttpServletRequest request;
+
 
 	@GetMapping("")
 	ModelAndView index() {
@@ -173,12 +172,10 @@ public class HomeController {
 
 
 	@PostMapping("/login")
-	ModelAndView loginAction(LoginDTO login,HttpServletRequest request) {
+	ModelAndView loginAction(LoginDTO login) {
 
 
-		String uriString = request.getRequestURI();
-
-		ModelAndView mdv = new ModelAndView("user/account");
+		ModelAndView mdv = new ModelAndView("redirect:/account");
 
 		if(!this.userService.login(login)) {
 			ModelAndView mdvErr = new ModelAndView("user/login");
@@ -215,13 +212,14 @@ public class HomeController {
 
 	@GetMapping("/account")
 	ModelAndView account() {
-		ModelAndView mdv = new ModelAndView("user/account");
+		ModelAndView mdv = new ModelAndView();
 
 		if(SessionUtilities.getUsername()==null) {
-			ModelAndView loginView = new ModelAndView("redirect:login");
+			ModelAndView loginView = new ModelAndView("redirect:/login");
 			return loginView;
 		}
 
+		mdv.setViewName("user/account");
 		mdv.addObject("user", SessionUtilities.getUser());
 
 		return mdv;
@@ -232,7 +230,7 @@ public class HomeController {
 
 		ModelAndView mdv = new ModelAndView();
 		if(!this.userService.checkLogin()) {
-			mdv.setViewName("redirect:login");
+			mdv.setViewName("redirect:/login");
 			return mdv;
 		}
 		mdv.setViewName("user/changepassword");
@@ -274,10 +272,15 @@ public class HomeController {
 	ModelAndView booking(@PathVariable("id") Long tour_id,
 						 @RequestParam String ngay_khoi_hanh,
 						 @RequestParam Integer so_nguoi,
-						 @RequestParam Long tong_tien) {
+						 @RequestParam Long tong_tien ) {
 
 		log.info("ngay khoi hanh log: {}",ngay_khoi_hanh);
 		ModelAndView mdv = new ModelAndView("user/booking-checkout");
+
+
+		if(tour_id==null || ngay_khoi_hanh==null || so_nguoi==null || tong_tien==null) {
+			return new ModelAndView("redirect:/err");
+		}
 
 		if(SessionUtilities.getUsername()==null) {
 			ModelAndView loginView = new ModelAndView("redirect:/login");
@@ -285,7 +288,7 @@ public class HomeController {
 		}
 
 		if(this.tourService.findTourById(tour_id)==null) {
-			return new ModelAndView("user/error");
+			return new ModelAndView("redirect:/error");
 		}
 
 		DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -295,18 +298,123 @@ public class HomeController {
 			ngay_khoi_hanh_value = ngay_khoi_hanh != null ? format.parse(ngay_khoi_hanh.split(" ")[0]) : null;
 		} catch (ParseException e) {
 			e.printStackTrace();
+			return new ModelAndView("redirect:/error");
 		}
 
-		BookingDTO bookingDTO = new BookingDTO();
-
 		mdv.addObject("user",SessionUtilities.getUser());
+		TourDTO tour = this.tourService.findTourById(tour_id);
+		mdv.addObject("tour",tour);
 		mdv.addObject("ngay_khoi_hanh",ngay_khoi_hanh_value);
-		mdv.addObject("tour",this.tourService.findTourById(tour_id));
 		mdv.addObject("so_nguoi",so_nguoi);
 		mdv.addObject("tong_tien",tong_tien);
 
 		return mdv;
 
+	}
+
+
+	@PostMapping(value = "/tour/booking/{tour_id}")
+	ModelAndView bookingAction(@PathVariable("tour_id") Long tour_id,
+							   @RequestParam("so_luong_nguoi") Integer so_luong_nguoi,
+							   @RequestParam("ngay_khoi_hanh") String ngay_khoi_hanh,
+							   @RequestParam("ghi_chu") String ghi_chu,
+							   @RequestParam("pt_thanh_toan") Integer pt_thanh_toan) {
+
+
+		ModelAndView mdv = new ModelAndView();
+
+		BookingDTO bookingDTO = new BookingDTO();
+
+		DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
+		Date ngay_khoi_hanh_value = null;
+		try {
+			ngay_khoi_hanh_value = ngay_khoi_hanh != null ? format.parse(ngay_khoi_hanh.split(" ")[0]) : null;
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return new ModelAndView("redirect:/error");
+		}
+
+		bookingDTO.setSo_luong_nguoi(so_luong_nguoi);
+		bookingDTO.setGhi_chu(ghi_chu);
+		bookingDTO.setNgay_khoi_hanh(ngay_khoi_hanh_value);
+		bookingDTO.setPt_thanh_toan(pt_thanh_toan);
+		bookingDTO.setTour_id(tour_id);
+		bookingDTO.setUser_id(SessionUtilities.getUser().getId());
+
+
+		if(this.bookingService.addNewBooking(bookingDTO)) {
+			mdv.setViewName("redirect:/account");
+			return mdv;
+		}
+
+		mdv.setViewName("redirect:/error");
+		return mdv;
+	}
+
+	@GetMapping("/user/tour")
+	ModelAndView userTour(){
+
+		if(!this.userService.checkLogin()){
+			return new ModelAndView("redirect:/login");
+		}
+
+		ModelAndView mdv = new ModelAndView("user/user-booking-list");
+
+		List<BookingDTO> bookingList = this.bookingService.findBookingByUserId(SessionUtilities.getUser().getId());
+
+		mdv.addObject("bookingList",bookingList);
+
+		return mdv;
+
+	}
+
+	@GetMapping("/user/booking/{id}")
+	ModelAndView userBookingDetai(@PathVariable Long id) {
+
+		if(!this.userService.checkLogin()){
+			return new ModelAndView("redirect:/login");
+		}
+
+		ModelAndView mdv = new ModelAndView();
+
+		BookingDTO booking = this.bookingService.getBookingById(id);
+
+		if(booking!=null) {
+			mdv.setViewName("user/user-booking");
+			mdv.addObject("booking",booking);
+			return mdv;
+		}
+
+		mdv.setViewName("redirect:/error");
+		return mdv;
+	}
+
+	@GetMapping("/user/booking/cancel/{id}")
+	ModelAndView cancelTour(@PathVariable Long id) {
+
+		if(id==null) {
+			return new ModelAndView("redirect:/error");
+		}
+
+		String referrer = request.getHeader("Referer");
+
+
+		log.info("Url trước đó : {}",referrer);
+
+		BookingDTO bookingDTO = this.bookingService.getBookingById(id);
+
+		if(bookingDTO!=null) {
+
+			if(bookingDTO.getTrang_thai()==0 || bookingDTO.getTrang_thai()==1){
+				this.bookingService.approveBooking(id,4);
+			}
+
+		}else {
+			return new ModelAndView("redirect:/error");
+		}
+
+		return new ModelAndView("redirect:/user/tour" );
 	}
 
 }

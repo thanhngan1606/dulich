@@ -29,4 +29,12 @@ public class SessionUtilities {
 	public static UserDTO getUser() {
 		return (UserDTO) getSession().getAttribute("user");
 	}
+
+	public static void setAdmin(UserDTO user) {
+		getSession().setAttribute("admin",user);
+	}
+	public static UserDTO getAdmin() {
+		return (UserDTO)getSession().getAttribute("admin");
+	}
+
 }

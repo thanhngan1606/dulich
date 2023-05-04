@@ -12,12 +12,13 @@ public interface BookingService {
 
 	Page<BookingDTO> findAllBooking(Integer trang_thai,String ten_tour,Pageable pageable);
 	
-	BookingDTO findBookingByUserId(Long userId);
+	List<BookingDTO> findBookingByUserId(Long userId);
 	
 	Page<BookingDTO> findBookingByTourId(Long tour_Id,Pageable pageable);
 	
 	boolean addNewBooking(BookingDTO newBooking);
 	
 	boolean approveBooking(Long bookingId,Integer trang_thai);
-	
+
+	BookingDTO getBookingById(Long id);
 }

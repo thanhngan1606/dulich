@@ -28,13 +28,12 @@ import jakarta.persistence.criteria.Root;
 @Service
 public class TourServiceImpl implements TourService {
 
-	@Autowired 
+	@Autowired
 	private TourRepository tourRepository;
 
-	
+
 	@Override
 	public Page<TourDTO> findAllTour(String ten_tour,Long gia_tour_from,Long gia_tour_to,Date ngay_khoi_hanh,Integer loai_tour,Pageable pageable) {
-		
 
 
 		Page<TourDTO> page = this.tourRepository.findAll(ten_tour, gia_tour_from, gia_tour_to,ngay_khoi_hanh, loai_tour, pageable);
@@ -44,11 +43,11 @@ public class TourServiceImpl implements TourService {
 	@Override
 	public TourDTO findTourById(Long id) {
 		TourDTO tourDTO = this.tourRepository.findTourById(id);
-		
+
 		if(tourDTO!=null) {
 			return tourDTO;
 		}
-		
+
 		return null;
 	}
 
@@ -58,28 +57,65 @@ public class TourServiceImpl implements TourService {
 			return true;
 		}
 		return false;
-		
+
 	}
 
 	@Override
-	public boolean updateTour(Tour newTour, Long id) {
+	public Tour addTour(TourDTO tourDTO) {
+
+		Tour tour = new Tour();
+		tour.setTen_tour(tourDTO.getTen_tour());
+		tour.setAnh_tour(tourDTO.getAnh_tour());
+		tour.setLoai_tour(tourDTO.getLoai_tour());
+		tour.setGia_tour(tour.getGia_tour());
+		tour.setGioi_thieu_tour(tourDTO.getGioi_thieu_tour());
+		tour.setAnh_tour(tourDTO.getAnh_tour());
+		tour.setDiem_den(tourDTO.getDiem_den());
+		tour.setNoi_dung_tour(tourDTO.getNoi_dung_tour());
+		tour.setDiem_khoi_hanh(tourDTO.getDiem_khoi_hanh());
+		tour.setNgay_khoi_hanh(tourDTO.getNgay_khoi_hanh());
+		tour.setSo_ngay(tour.getSo_ngay());
+		tour.setTrang_thai(1);
+		tour.setNgay_ket_thuc(null);
+
+		return this.tourRepository.save(tour);
+	}
+
+	@Override
+	public Tour updateTour(TourDTO newTour, Long id) {
 		Optional<Tour> tour = this.tourRepository.findById(id);
 		if(tour.isPresent()) {
-			Tour updatedTour = newTour;
-			updatedTour.setId(id);
-			this.tourRepository.save(updatedTour);
-			return true;
+			Tour updatedTour = tour.get();
+
+			updatedTour.setTen_tour(newTour.getTen_tour());
+			updatedTour.setAnh_tour(newTour.getAnh_tour());
+			updatedTour.setLoai_tour(newTour.getLoai_tour());
+			updatedTour.setGia_tour(newTour.getGia_tour());
+			updatedTour.setGioi_thieu_tour(newTour.getGioi_thieu_tour());
+			updatedTour.setAnh_tour(newTour.getAnh_tour());
+			updatedTour.setDiem_den(newTour.getDiem_den());
+			updatedTour.setNoi_dung_tour(newTour.getNoi_dung_tour());
+			updatedTour.setDiem_khoi_hanh(newTour.getDiem_khoi_hanh());
+			updatedTour.setNgay_khoi_hanh(newTour.getNgay_khoi_hanh());
+			updatedTour.setSo_ngay(newTour.getSo_ngay());
+			updatedTour.setTrang_thai(newTour.getTrang_thai());
+			updatedTour.setNgay_ket_thuc(null);
+
+			return this.tourRepository.save(updatedTour);
 		}
-		return false;
-		
+		return null;
+
 	}
 
 	@Override
 	public boolean deleteTour(Long id) {
 		Optional<Tour> tour = this.tourRepository.findById(id);
 		if(tour.isPresent()) {
-			this.tourRepository.deleteById(id);
-			return true;
+			if(this.tourRepository.existsBookingByTourId(id)==false) {
+				this.tourRepository.deleteById(id);
+				return true;
+			}
+
 		}
 		return false;
 	}

@@ -2,19 +2,18 @@ package com.hoangminh.service.impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import com.hoangminh.dto.ChangePasswordDTO;
-import com.hoangminh.dto.UpdateUserDTO;
+import com.hoangminh.dto.*;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.hoangminh.controller.HomeController;
-import com.hoangminh.dto.LoginDTO;
-import com.hoangminh.dto.RegisterDTO;
 import com.hoangminh.entity.User;
 import com.hoangminh.repository.UserRepository;
 import com.hoangminh.service.UserService;
@@ -32,11 +31,21 @@ public class UserServiceImpl implements UserService {
 	private UserRepository userRepository;
 
 	@Override
-	public Page<User> findAllUser(Pageable pageable) {
+	public Page<UserDTO> findAllUser(String sdt,String email,String ho_ten,Pageable pageable) {
 
 		Page<User> page = userRepository.findAll(pageable);
 
-		return page;
+		Page<UserDTO> pageUserDTO = new PageImpl<>(
+			page.getContent().stream().map(user ->  {
+
+				UserDTO userDTO = ConvertUserToDto.convertUsertoDto(user);
+				return userDTO;
+			}).collect(Collectors.toList()),
+				page.getPageable(),
+				page.getTotalElements()
+		);
+
+		return pageUserDTO;
 	}
 
 	@Override
@@ -50,9 +59,9 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User findUserByUsername(String username) {
-		Optional<User> user = userRepository.findByUsername(username);
-		if(user.isPresent()) {
-			return user.get();
+		User user = userRepository.findByUsername(username);
+		if(user!=null) {
+			return user;
 		}
 		return null;
 	}
@@ -167,6 +176,58 @@ public class UserServiceImpl implements UserService {
 
 		}
 		return false;
+	}
+
+	@Override
+	public boolean updateUserByAdmin(UpdateUserDTO updateUserDTO,Long id) {
+
+		User user = this.userRepository.findById(id).get();
+		if(user!=null) {
+			user.setSdt(updateUserDTO.getSdt());
+			user.setUsername(updateUserDTO.getUsername());
+			user.setEmail(updateUserDTO.getEmail());
+			user.setDia_chi(updateUserDTO.getDia_chi());
+			user.setHo_ten(updateUserDTO.getHo_ten());
+			user.setGioi_tinh(updateUserDTO.getGioi_tinh());
+
+			this.userRepository.save(user);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean adminLogin(LoginDTO user) {
+		User userCheck = this.findUserByUsername(user.getUsername());
+
+		if(userCheck==null) {
+			return false;
+		}
+
+		log.info("userCheck:{}",userCheck.getUsername());
+
+		if(BCrypt.checkpw(user.getPassword(), userCheck.getPassword()) && userCheck.getRole()==0) {
+			SessionUtilities.setAdmin(ConvertUserToDto.convertUsertoDto(userCheck));
+
+			log.info("userCheck:{}",SessionUtilities.getAdmin().getUsername());
+
+			return true;
+		}
+
+
+		return false;
+	}
+
+	@Override
+	public boolean checkAdmin(UserDTO user) {
+		return SessionUtilities.getAdmin()!=null;
+	}
+
+	@Override
+	public void adminLogout() {
+		SessionUtilities.setAdmin(null);
 	}
 
 

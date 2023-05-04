@@ -77,7 +77,7 @@
          style="z-index: 9;">
         <nav
                 class="navbar navbar-expand-lg bg-light navbar-light shadow-lg py-3 py-lg-0 pl-3 pl-lg-5">
-            <a href="" class="navbar-brand">
+            <a href="/" class="navbar-brand">
                 <h1 class="m-0 text-primary">
                     <span class="text-dark">HOÀNG MINH</span> TOUR
                 </h1>
@@ -111,12 +111,12 @@
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <div class="contact-form bg-white" style="padding: 30px;">
-                    <form name="sentMessage" method="post" action="/tour/booking" id="contactForm"
+                    <form name="sentMessage" method="post"  th:action="@{/tour/booking/{tour_id}(tour_id=${tour.id})}" id="contactForm"
                           novalidate="novalidate">
                         <div class="form-row">
                             <div class="control-group col-sm-6">
                                 <input type="text" class="form-control p-4" disabled="disabled" name="ho_ten" id="email"
-                                       placeholder="Họ tên" th:value="${user.ho_ten}" required="required"
+                                       placeholder="Họ tên"  th:value="${user.ho_ten}" required="required"
                                        data-validation-required-message="Vui lòng nhập họ và tên"  />
                                 <p class="help-block text-danger"></p>
                             </div>
@@ -143,50 +143,49 @@
 
                         <div class="control-group">
                             <h6 class="text-primary text-uppercase " style="letter-spacing: 5px;">Tên tour</h6>
-                            <input type="email" class="form-control p-4" name="email" id="sddsbject"
-                                   placeholder="Tên tour" required="required" disabled="disabled" th:value="${tour.ten_tour}"
-                                   data-validation-required-message="Vui lòng nhập email" />
+                            <input type="email" class="form-control p-4" name="ten_tour" id="sddsbject"
+                                   placeholder="Tên tour" required="required" disabled="disabled"
+                                   data-validation-required-message="Vui lòng nhập email" th:value="${tour.ten_tour}" />
                             <p class="help-block text-danger"></p>
                         </div>
 
                         <div class="form-row">
                             <div class="control-group col-sm-6">
                                 <h6 class="text-primary text-uppercase " style="letter-spacing: 5px;">Ngày khởi hành</h6>
-                                <input type="tel" class="form-control p-4" id="namce" name="ngay_khoi_hanh" th:value="${#dates.format(ngay_khoi_hanh, 'dd-MM-yyyy')}"
-                                       placeholder="Ngày khởi hành" required="required" disabled="disabled"
+                                <input type="tel" class="form-control p-4" id="namce"  name="ngay_khoi_hanh"
+                                       placeholder="Ngày khởi hành" required="required"  th:value="${#dates.format(ngay_khoi_hanh, 'dd-MM-yyyy')}"
                                        data-validation-required-message="Vui lòng nhập số điện thoại" />
                                 <p class="help-block text-danger"></p>
                             </div>
                             <div class="control-group col-sm-6">
                                 <div class="mb-3 mb-md-0">
                                     <h6 class="text-primary text-uppercase " style="letter-spacing: 5px;">Số lượng người</h6>
-                                    <input type="number" value="1" class="form-control p-4" id="so_nguoi" name="so_nguoi" disabled="disabled"
-                                           th:value="${so_nguoi}" placeholder="Nhập số người" />
+                                    <input type="number" value="1" class="form-control p-4" th:value="${so_nguoi}"  id="so_luong_nguoi" name="so_luong_nguoi"
+                                            placeholder="Nhập số người" />
                                 </div>
                             </div>
                         </div>
                         <div class="control-group">
                             <h6 class="text-primary text-uppercase " style="letter-spacing: 5px;">Tổng tiền cần thanh toán</h6>
-                            <input type="hidden" name="tong_tien" id="input_tong_tien" value="">
                             <h5 class="text-danger mt-4" th:attr="data-price=${tour.gia_tour}" id="gia_tour" th:inline="text">[[${#numbers.formatInteger(tong_tien,3,'POINT')}]] VNĐ </h5>
                             <p class="help-block text-danger"></p>
                         </div>
 
                         <div class="control-group">
-                            <h6 class="text-primary text-uppercase " style="letter-spacing: 5px;">Ghi chú</h6>
+                            <h6 class="text-primary text-uppercase"  style="letter-spacing: 5px;">Ghi chú</h6>
                             <textarea type="email" class="form-control p-4" name="ghi_chu" id="subjcdect"
                                       placeholder="Ghi chú" required="required"
-                                      data-validation-required-message="Vui lòng nhập email"></textarea>
+                                      data-validation-required-message="Vui lòng nhập email" ></textarea>
                             <p class="help-block text-danger"></p>
                         </div>
                         <h6 class="text-primary text-uppercase " style="letter-spacing: 5px;">Phương thức thanh toán</h6>
                         <div class="form-row pb-2">
                             <div class="control-group">
-                                <input type="radio" value="0" class="p-2" id="tien_mat" name="pt_thanh_toan" placeholder="Ngày khởi hành" required="required"/>
+                                <input type="radio" value="0" checked  class="p-2" id="tien_mat" name="pt_thanh_toan" placeholder="Ngày khởi hành" required="required"/>
                                 <label for="tien_mat">Thanh toán tiền mặt tại công ty</label>
                             </div>
                             <div class="control-group">
-                                <input type="radio" value="1" class="p-2" id="chuyen_khoan" name="pt_thanh_toan"  placeholder="Nhập số người" />
+                                <input type="radio" value="1"   class="p-2" id="chuyen_khoan" name="pt_thanh_toan"  placeholder="Nhập số người" />
                                 <label for="chuyen_khoan">Chuyển khoản với nội dung: dattour sdt đến stk: 084354939-MB bank </label>
                             </div>
                         </div>

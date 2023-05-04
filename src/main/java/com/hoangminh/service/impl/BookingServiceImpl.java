@@ -30,7 +30,7 @@ public class BookingServiceImpl implements BookingService{
 	}
 
 	@Override
-	public BookingDTO findBookingByUserId(Long userId) {
+	public List<BookingDTO> findBookingByUserId(Long userId) {
 		return this.bookingRepository.findBookingByUserId(userId);
 	}
 
@@ -43,8 +43,8 @@ public class BookingServiceImpl implements BookingService{
 	public boolean addNewBooking(BookingDTO newBooking) {
 
 
-		BookingDTO checkBooking  = this.bookingRepository.findBookingByUserId(newBooking.getUser_id());
-		if(checkBooking!=null) {
+		List<BookingDTO> checkBooking  = this.bookingRepository.findBookingByUserId(newBooking.getUser_id());
+		if(checkBooking.size()>0) {
 			return false;
 		}
 
@@ -79,6 +79,11 @@ public class BookingServiceImpl implements BookingService{
 		}
 
 		return false;
+	}
+
+	@Override
+	public BookingDTO getBookingById(Long id) {
+		return this.bookingRepository.findBookingById(id);
 	}
 
 }

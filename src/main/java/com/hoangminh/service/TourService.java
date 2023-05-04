@@ -18,8 +18,10 @@ public interface TourService {
 	TourDTO findTourById(Long id);
 	
 	boolean saveTour(Tour tour);
-	
-	boolean updateTour(Tour tour,Long id);
+
+	Tour addTour(TourDTO tourDTO);
+
+	Tour updateTour(TourDTO newTour,Long id);
 	
 	boolean deleteTour(Long id);
 }

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Quản lý người dùng</title>
+<!--    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />-->
+    <link rel="stylesheet" href="/public/admin/css/fontawesome.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <link href="/public/admin/css/styles.css" rel="stylesheet" />
+    <script src="/public/admin/js/all.min.js" crossorigin="anonymous"></script>
+</head>
+<body class="sb-nav-fixed">
+<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+    <!-- Navbar Brand-->
+    <a class="navbar-brand ps-3" href="index.html">Quản lý người dùng</a>
+    <!-- Sidebar Toggle-->
+    <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+    <!-- Navbar Search-->
+    <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+        <div class="input-group">
+            <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
+            <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+        </div>
+    </form>
+    <!-- Navbar-->
+    <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="#!">Logout</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav">
+        <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+            <div class="sb-sidenav-menu">
+                <div class="nav">
+                    <div class="sb-sidenav-menu-heading">Core</div>
+                    <a class="nav-link" href="index.html">
+                        <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                        Trang chủ
+                    </a>
+                    <div class="sb-sidenav-menu-heading">Trang quản lý</div>
+                    <a class="nav-link" href="tables.html">
+                        <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                        Quản lý người dùng
+                    </a>
+                    <a class="nav-link" href="tables.html">
+                        <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                        Quản lý tour
+                    </a>
+                    <a class="nav-link" href="tables.html">
+                        <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                        Quản lý booking
+                    </a>
+                    <a class="nav-link" href="tables.html">
+                        <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                        Quản lý tin tức
+                    </a>
+                    <div class="sb-sidenav-menu-heading">Trang quản lý</div>
+                    <a class="nav-link" href="tables.html">
+                        <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                        Thống kê báo cáo hệ thống
+                    </a>
+                </div>
+            </div>
+            <div class="sb-sidenav-footer">
+                <div class="small">Logged in as:</div>
+                Start Bootstrap
+            </div>
+        </nav>
+    </div>
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container-fluid px-4">
+                <h1 class="mt-4">Danh sách người dùng</h1>
+                <ol class="breadcrumb mb-4">
+                    <li class="breadcrumb-item"><a href="index.html">Trang chủ</a></li>
+                    <li class="breadcrumb-item active">Quản lý người dùng</li>
+                </ol>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-table me-1"></i>
+                        Bảng dữ liệu người dùng
+                    </div>
+                    <div class="card-body">
+                        <table id="datatablesSimple">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Họ tên</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>SĐT</th>
+                                <th>Địa chỉ</th>
+                                <th>Giới tính</th>
+                                <th colspan="2">Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tfoot>
+                            <tr>
+                                <th>ID</th>
+                                <th>Họ tên</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>SĐT</th>
+                                <th>Địa chỉ</th>
+                                <th>Giới tính</th>
+                                <th colspan="2">Thao tác</th>
+                            </tr>
+                            </tfoot>
+                            <tbody id="table-body">
+                                <tr>
+                                    <th>1</th>
+                                    <th>Lê Mạnh Cường</th>
+                                    <th>Username</th>
+                                    <th>lemanhcuong0406@gmail.com</th>
+                                    <th>0359860173</th>
+                                    <th>Hà Nội</th>
+                                    <th>Nam</th>
+                                    <th>
+                                        <button href="" class="btn btn-small btn-primary">
+                                            <i class="fa-solid fa-user-pen"></i>
+                                        </button>
+                                        <button href="" class="btn btn-small btn-danger">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<script src="/public/admin/js/boostrap-bundle.min.js" crossorigin="anonymous"></script>
+<script src="/public/admin/js/scripts.js"></script>
+<script src="/public/admin/js/data-table.js" crossorigin="anonymous"></script>
+<script src="/public/admin/js/datatables-simple-demo.js"></script>
+<script src="/public/admin/js/jquery.js"></script>
+<!--<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>-->
+
+<script src="/public/admin/js/all.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+
+
+        $.ajax({
+            url: "http://localhost:8085/api/user/getAll?pageIndex=0",
+            dataType: "json",
+            success: function (data) {
+                let output="";
+                for (let i = 0; i <data.data.length; i++) {
+                    output += `
+                            <tr>
+                                <th>${data.data[i].id}</th>
+                                <th>${data.data[i].ho_ten}</th>
+                                <th>${data.data[i].username}</th>
+                                <th>${data.data[i].email}</th>
+                                <th>${data.data[i].sdt}</th>
+                                <th>${data.data[i].dia_chi}</th>
+                                <th>${data.data[i].gioi_tinh}</th>
+                                <th>
+                                    <button href="" data-id="${data.data[i].id}" id="edit-btn" class="btn btn-small btn-primary">
+                                        <i class="fa-solid fa-user-pen"></i>
+                                    </button>
+                                    <button href="" data-id="${data.data[i].id}" id="remove-btn" class="btn btn-small btn-danger">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </th>
+                            </tr>
+                            `
+                }
+            }
+        })
+
+    })
+</script>
+</body>
+</html>

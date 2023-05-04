@@ -114,6 +114,10 @@
 				<div class="col-lg-8">
 					<div class="contact-form bg-white" style="padding: 30px;">
 						<div id="help-block text-succces" style="color:green;" th:if="${message != null}">[[${message}]]</div>
+						<div class="align-content-end py-4">
+							<a class="btn btn-primary py-3 px-4" href="/user/tour"
+									id="">Quản lý tour đã đặt</a>
+						</div>
 						<form name="sentMessage"  method="post" action="/updateAccount"
 							id="contactForm" novalidate="novalidate">
 							<div class="form-row">

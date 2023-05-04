@@ -9,8 +9,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class BookingDTO {
+
+    private Long id;
 
     private Long user_id;
     
@@ -29,4 +30,20 @@ public class BookingDTO {
     private Integer pt_thanh_toan;
 
     private String ghi_chu;
+
+    private Date booking_at;
+
+    public BookingDTO(Long id, Long user_id, Long tour_id, String ten_tour, Integer so_luong_nguoi, Date ngay_khoi_hanh, Long tong_tien, Integer trang_thai, Integer pt_thanh_toan, String ghi_chu, Date booking_at) {
+        this.id = id;
+        this.user_id = user_id;
+        this.tour_id = tour_id;
+        this.ten_tour = ten_tour;
+        this.so_luong_nguoi = so_luong_nguoi;
+        this.ngay_khoi_hanh = ngay_khoi_hanh;
+        this.tong_tien = tong_tien;
+        this.trang_thai = trang_thai;
+        this.pt_thanh_toan = pt_thanh_toan;
+        this.ghi_chu = ghi_chu;
+        this.booking_at = booking_at;
+    }
 }
