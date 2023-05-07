@@ -47,10 +47,10 @@ public class UserController {
 
         if(user!=null) {
             if(this.userService.updateUserByAdmin(updateUserDTO,id)) {
-                return new ResponseDTO("Thành công",this.userService.findUserById(id));
+                return new ResponseDTO("Cập nhật thành công",this.userService.findUserById(id));
             }
         }
-        return new ResponseDTO("Thất bại",null);
+        return new ResponseDTO("Cập nhật thất bại",null);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -64,7 +64,7 @@ public class UserController {
             }
         }
 
-        return new ResponseDTO("Xóa thất bại",null);
+        return new ResponseDTO("Không thể xóa người dùng này",null);
     }
 
 }

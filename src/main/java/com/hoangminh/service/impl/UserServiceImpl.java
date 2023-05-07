@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hoangminh.dto.*;
+import com.hoangminh.repository.BookingRepository;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,6 +30,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private BookingRepository bookingRepository;
 
 	@Override
 	public Page<UserDTO> findAllUser(String sdt,String email,String ho_ten,Pageable pageable) {
@@ -103,8 +107,10 @@ public class UserServiceImpl implements UserService {
 	public boolean deleteUserById(Long id) {
 		Optional<User> user = this.userRepository.findById(id);
 		if(user.isPresent()) {
-			this.userRepository.deleteById(id);
-			return true;
+			if(this.bookingRepository.findBookingByUserId(id)==null || this.bookingRepository.findBookingByUserId(id).size()==0) {
+				this.userRepository.deleteById(id);
+				return true;
+			}
 		}
 		return false;
 	}
