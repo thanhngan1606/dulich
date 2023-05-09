@@ -21,7 +21,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long>{
 			+ " WHERE ( :trang_thai IS NULL OR b.trang_thai = :trang_thai ) "
 			+ " AND ( :ten_tour IS NULL OR :ten_tour = '' OR t.ten_tour LIKE %:ten_tour% ) "
 			+ " ORDER BY b.id ")
-	public Page<BookingDTO> findAllBooking(@Param("trang_thai") Integer trang_thai,@Param("trang_thai") String ten_tour,Pageable pageable);
+	public Page<BookingDTO> findAllBooking(@Param("trang_thai") Integer trang_thai,@Param("ten_tour") String ten_tour,Pageable pageable);
 	
 	@Query(value = "SELECT new com.hoangminh.dto.BookingDTO(b.id,b.user_id,b.tour_id,t.ten_tour,b.so_luong_nguoi,b.ngay_khoi_hanh,b.tong_tien,b.trang_thai,b.pt_thanh_toan,b.ghi_chu,b.booking_at) "
 			+ " FROM Booking  b JOIN User u ON b.user_id = u.id JOIN Tour t ON b.tour_id = t.id  WHERE b.user_id = :userId AND b.trang_thai !=3")

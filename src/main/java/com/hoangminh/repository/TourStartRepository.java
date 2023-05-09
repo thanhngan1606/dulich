@@ -14,7 +14,7 @@ import com.hoangminh.entity.TourStart;
 public interface TourStartRepository extends JpaRepository<TourStart, Long>{
 	
 	
-	@Query("SELECT new com.hoangminh.dto.TourStartDTO(d.ngay_khoi_hanh) FROM TourStart d WHERE d.tour.id = :tour_id")
+	@Query("SELECT new com.hoangminh.dto.TourStartDTO(d.ngay_khoi_hanh) FROM TourStart d WHERE d.tour_id = :tour_id")
 	List<TourStartDTO> getDateStartByTourId(@Param("tour_id") Long tour_id);
 
 }

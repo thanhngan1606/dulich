@@ -26,7 +26,7 @@ public class BookingServiceImpl implements BookingService{
 
 	@Override
 	public Page<BookingDTO> findAllBooking(Integer trang_thai,String ten_tour,Pageable pageable) {
-		return this.bookingRepository.findAllBooking(trang_thai, ten_tour, pageable);
+		return this.bookingRepository.findAllBooking(trang_thai,ten_tour, pageable);
 	}
 
 	@Override
@@ -75,6 +75,19 @@ public class BookingServiceImpl implements BookingService{
 			Booking bookingUpdated = booking.get();
 			bookingUpdated.setTrang_thai(trang_thai);
 			this.bookingRepository.save(bookingUpdated);
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean deleteBooking(Long id) {
+
+		BookingDTO booking = this.getBookingById(id);
+
+		if(booking.getTrang_thai()==3) {
+			this.bookingRepository.deleteById(id);
 			return true;
 		}
 

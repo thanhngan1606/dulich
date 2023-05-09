@@ -2,7 +2,11 @@ package com.hoangminh.controller.api.admin;
 
 import com.hoangminh.dto.ResponseDTO;
 import com.hoangminh.dto.TourDTO;
+import com.hoangminh.entity.Image;
 import com.hoangminh.entity.Tour;
+import com.hoangminh.entity.TourStart;
+import com.hoangminh.repository.TourStartRepository;
+import com.hoangminh.service.ImageService;
 import com.hoangminh.service.TourService;
 import com.hoangminh.utilities.FileUploadUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -23,12 +27,18 @@ public class TourController {
     @Autowired
     private TourService tourService;
 
+    @Autowired
+    private TourStartRepository tourStartRepository;
+
+    @Autowired
+    private ImageService imageService;
+
     @GetMapping("/getAllTour")
-    public ResponseDTO getAllTour(@RequestParam(value="ten_tour") String ten_tour,
-                                  @RequestParam(value="gia_tour_from") Long gia_tour_from,
-                                  @RequestParam(value="gia_tour_to") Long gia_tour_to,
-                                  @RequestParam(value="ngay_khoi_hanh") Date ngay_khoi_hanh,
-                                  @RequestParam(value="loai_tour") Integer loai_tour,
+    public ResponseDTO getAllTour(@RequestParam(value="ten_tour",required = false) String ten_tour,
+                                  @RequestParam(value="gia_tour_from",required = false) Long gia_tour_from,
+                                  @RequestParam(value="gia_tour_to",required = false) Long gia_tour_to,
+                                  @RequestParam(value="ngay_khoi_hanh",required = false) Date ngay_khoi_hanh,
+                                  @RequestParam(value="loai_tour",required = false) Integer loai_tour,
                                   @RequestParam(value = "pageSize",defaultValue = "10") Integer pageSize,
                                   @RequestParam(value = "pageIndex") Integer pageIndex
                                                                                         ) {
@@ -103,6 +113,49 @@ public class TourController {
 
         }
         return new ResponseDTO("Xóa thất bại",null);
+    }
+
+
+    @PostMapping("/add-image/{id}")
+    public ResponseDTO addImage(@PathVariable("id") Long id,@RequestParam("image") MultipartFile image) {
+
+
+        String uploadDir = "/upload";
+        try {
+            // Lưu ảnh vào thư mục "upload"
+            String fileName = image.getOriginalFilename()+id.toString();
+            FileUploadUtil.saveFile(uploadDir, fileName, image);
+
+            if(this.tourService.findTourById(id)!=null) {
+
+                return new ResponseDTO("Thêm thành công",this.imageService.addToTour(id,fileName));
+            }
+
+
+        } catch (IOException  e) {
+            // Xử lý exception
+            log.info("Lỗi upload file: {}",e.getMessage());
+        }
+
+        return new ResponseDTO("Lỗi khi thêm",null);
+
+    }
+
+
+    @PostMapping("/add-date/{id}")
+    public ResponseDTO addStartDate(@PathVariable("id") Long id , @RequestParam("date-start") Date startDate) {
+
+        if(this.tourService.findTourById(id)!=null) {
+
+            TourStart tourStart = new TourStart();
+
+            tourStart.setTour_id(id);
+            tourStart.setNgay_khoi_hanh(startDate);
+
+            return new ResponseDTO("Thêm thành công",this.tourStartRepository.save(tourStart));
+        }
+
+        return new ResponseDTO("Lỗi khi thêm",null);
     }
 
 }

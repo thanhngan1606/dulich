@@ -24,9 +24,6 @@ public class Image {
 	private Long id;
 	
 	private String url;
-	
-	@JsonIgnore
-	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tour_id")
-    private Tour tour;
+
+    private Long tour_id;
 }

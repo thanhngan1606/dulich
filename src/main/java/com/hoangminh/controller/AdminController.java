@@ -13,4 +13,19 @@ public class AdminController {
         return "admin/user";
     }
 
+    @GetMapping("/tour")
+    public String tourManage() {
+        return "admin/tour";
+    }
+
+    @GetMapping("/booking")
+    public String bookingManager() {
+        return "admin/booking";
+    }
+
+    @GetMapping("/login")
+    public String adminLogin() {
+        return "admin/login";
+    }
+
 }

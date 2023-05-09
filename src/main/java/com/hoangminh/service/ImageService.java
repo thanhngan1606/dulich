@@ -9,5 +9,7 @@ import com.hoangminh.entity.Image;
 public interface ImageService {
 
 	List<Image> findByTourId(Long id);
+
+	public Image addToTour(Long tourId,String url);
 	
 }

@@ -41,4 +41,14 @@ public class BookingController {
         return new ResponseDTO("Cập nhật thất bại",null);
     }
 
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseDTO deleteBooking(@PathVariable("id") Long id) {
+        if(this.bookingService.deleteBooking(id)) {
+            return new ResponseDTO("Xóa thành công",null);
+        }
+
+        return new ResponseDTO("Chỉ có thể xóa tour đã hoàn thành",null);
+    }
+
 }

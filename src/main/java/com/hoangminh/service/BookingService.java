@@ -20,5 +20,7 @@ public interface BookingService {
 	
 	boolean approveBooking(Long bookingId,Integer trang_thai);
 
+	boolean deleteBooking(Long id);
+
 	BookingDTO getBookingById(Long id);
 }
