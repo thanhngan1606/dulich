@@ -31,6 +31,11 @@
 
 <!-- Customized Bootstrap Stylesheet -->
 <link href="../public/css/style.css" rel="stylesheet">
+	<style>
+		#setImage img {
+			width: 80%;
+		}
+	</style>
 </head>
 
 <body>
@@ -145,7 +150,7 @@
 									class="text-primary text-uppercase text-decoration-none"
 									href="">Tours Detail</a>
 							</div>
-							<div class="container" th:text="${tour.noi_dung_tour}"></div>
+							<div class="container" id="setImage" th:utext="${tour.noi_dung_tour}"></div>
 						</div>
 					</div>
 					<!-- Blog Detail End -->

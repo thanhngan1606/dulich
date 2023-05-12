@@ -2,12 +2,15 @@ package com.hoangminh.controller.api.admin;
 
 import com.hoangminh.dto.ResponseDTO;
 import com.hoangminh.dto.TourDTO;
+import com.hoangminh.dto.TourStartDTO;
+import com.hoangminh.dto.ToutStartAddDTO;
 import com.hoangminh.entity.Image;
 import com.hoangminh.entity.Tour;
 import com.hoangminh.entity.TourStart;
 import com.hoangminh.repository.TourStartRepository;
 import com.hoangminh.service.ImageService;
 import com.hoangminh.service.TourService;
+import com.hoangminh.utilities.DateUtils;
 import com.hoangminh.utilities.FileUploadUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +21,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/tour")
@@ -64,7 +70,7 @@ public class TourController {
 
         try {
             // Lưu ảnh vào thư mục "upload"
-            String fileName = image.getOriginalFilename();
+            String fileName = UUID.randomUUID().toString()+ image.getOriginalFilename();
             FileUploadUtil.saveFile(uploadDir, fileName, image);
 
             return new ResponseDTO("Thành công",fileName);
@@ -77,13 +83,13 @@ public class TourController {
 
     @PostMapping("/add/image")
     public ResponseDTO createTourImage(@RequestParam("image")MultipartFile image) {
-        String uploadDir = "/public/upload";
+        String uploadDir = "HoangMinhWeb/src/main/resources/static/public/img";
 
         Tour tour = tourService.findFirstByOrderByIdDesc();
 
         try {
             // Lưu ảnh vào thư mục "upload"
-            String fileName = image.getOriginalFilename();
+            String fileName = UUID.randomUUID().toString()+ image.getOriginalFilename();
             FileUploadUtil.saveFile(uploadDir, fileName, image);
 
             // Lưu thông tin của tour vào cơ sở dữ liệu
@@ -98,6 +104,12 @@ public class TourController {
 
     @PostMapping("/add")
     public ResponseDTO createTour(@RequestBody TourDTO tourDTO) {
+
+        String[] dataGet = tourDTO.getDiem_den().split("/");
+        tourDTO.setDiem_den(dataGet[0]);
+        tourDTO.setNgay_khoi_hanh(DateUtils.convertStringToDate(dataGet[1]));
+        tourDTO.setNgay_ket_thuc(DateUtils.convertStringToDate(dataGet[2]));
+
         Tour tour = this.tourService.addTour(tourDTO);
         if(tour!=null) {
             return new ResponseDTO("Thành công",tour);
@@ -109,12 +121,12 @@ public class TourController {
 
     @PutMapping("/update/image/{id}")
     public ResponseDTO updateTourImage(@PathVariable("id") Long id,@RequestParam("image") MultipartFile image) {
-        String uploadDir = "/public/upload";
+        String uploadDir = "HoangMinhWeb/src/main/resources/static/public/img";
 
         TourDTO tourDTO = this.tourService.findTourById(id);
         try {
             // Lưu ảnh vào thư mục "upload"
-            String fileName = image.getOriginalFilename();
+            String fileName = UUID.randomUUID().toString()+ image.getOriginalFilename();
             FileUploadUtil.saveFile(uploadDir, fileName, image);
 
             // Lưu thông tin của tour vào cơ sở dữ liệu
@@ -134,6 +146,10 @@ public class TourController {
     @PutMapping("/update/{id}")
     public ResponseDTO updateTour(@PathVariable("id") Long id,@RequestBody TourDTO tourDTO) {
 
+        String[] dataGet = tourDTO.getDiem_den().split("/");
+        tourDTO.setDiem_den(dataGet[0]);
+        tourDTO.setNgay_khoi_hanh(DateUtils.convertStringToDate(dataGet[1]));
+        tourDTO.setNgay_ket_thuc(DateUtils.convertStringToDate(dataGet[2]));
         Tour updateTour = this.tourService.updateTour(tourDTO,id);
         if(updateTour!=null) {
             return new ResponseDTO("Thành công",updateTour);
@@ -154,13 +170,17 @@ public class TourController {
         return new ResponseDTO("Xóa thất bại",null);
     }
 
+    @GetMapping("/getAllImageOfTour/{id}")
+    public ResponseDTO getAllImageOfTour(@PathVariable("id") Long id) {
+        return new ResponseDTO("Thành công",this.imageService.findByTourId(id));
+    }
 
     @PostMapping("/add-image/{id}")
     public ResponseDTO addImage(@PathVariable("id") Long id,@RequestParam("image") MultipartFile image) {
-        String uploadDir = "/public/upload";
+        String uploadDir = "HoangMinhWeb/src/main/resources/static/public/img";
         try {
             // Lưu ảnh vào thư mục "upload"
-            String fileName = image.getOriginalFilename()+id.toString();
+            String fileName = UUID.randomUUID()+image.getOriginalFilename();
             FileUploadUtil.saveFile(uploadDir, fileName, image);
 
             if(this.tourService.findTourById(id)!=null) {
@@ -176,21 +196,45 @@ public class TourController {
 
     }
 
+    @GetMapping("/StartDate/{id}")
+    public ResponseDTO getAllStartDate(@PathVariable("id") Long id) {
+        return new ResponseDTO("Thành công",this.tourStartRepository.getDateStartByTourId(id));
+    }
+
+
+    @DeleteMapping("/StartDate/delete/{id}")
+    public ResponseDTO deleteStartDate(@PathVariable("id") Long id) {
+        this.tourStartRepository.deleteById(id);
+        return new ResponseDTO("Xóa thành công",null);
+    }
+
+    @DeleteMapping("/TourImage/delete/{id}")
+    public ResponseDTO deleteTourImage(@PathVariable("id") Long id) {
+        this.imageService.deleteById(id);
+        return new ResponseDTO("Xóa ảnh thành công",null);
+    }
 
     @PostMapping("/add-date/{id}")
-    public ResponseDTO addStartDate(@PathVariable("id") Long id , @RequestParam("date-start") Date startDate) {
+    public ResponseDTO addStartDate(@PathVariable("id") Long id , @RequestBody ToutStartAddDTO toutStartAddDTO) {
+
+        Date ngay_khoi_hanh = DateUtils.convertStringToDate(toutStartAddDTO.getNgay_khoi_hanh());
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(ngay_khoi_hanh);
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+
 
         if(this.tourService.findTourById(id)!=null) {
 
             TourStart tourStart = new TourStart();
 
             tourStart.setTour_id(id);
-            tourStart.setNgay_khoi_hanh(startDate);
+            tourStart.setNgay_khoi_hanh(calendar.getTime());
 
             return new ResponseDTO("Thêm thành công",this.tourStartRepository.save(tourStart));
         }
 
-        return new ResponseDTO("Lỗi khi thêm",null);
+        return new ResponseDTO("Tour không tồn tại khi thêm",null);
     }
 
 }

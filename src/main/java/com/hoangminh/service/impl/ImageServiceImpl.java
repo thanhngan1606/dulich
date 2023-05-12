@@ -34,4 +34,9 @@ public class ImageServiceImpl implements ImageService {
         }
         return null;
     }
+
+    @Override
+    public void deleteById(Long id) {
+        this.imageRepository.deleteById(id);
+    }
 }

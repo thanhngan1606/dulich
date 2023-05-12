@@ -17,6 +17,12 @@
         label {
             padding: 10px 0;
         }
+        table.dataTable tbody td:last-child {
+            text-align: center;
+        }
+        table.dataTable tbody td:last-child button{
+            margin: 4px;
+        }
     </style>
 <!--    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>-->
 </head>
@@ -58,10 +64,18 @@
                         <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                         Quản lý người dùng
                     </a>
-                    <a class="nav-link" href="tables.html">
-                        <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                        <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                         Quản lý tour
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                     </a>
+                    <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav">
+                            <a class="nav-link" href="layout-static.html">Danh sách Tour</a>
+                            <a class="nav-link" href="layout-sidenav-light.html">Ngày khởi hành</a>
+                            <a class="nav-link" href="layout-sidenav-light.html">Quản lý ảnh</a>
+                        </nav>
+                    </div>
                     <a class="nav-link" href="tables.html">
                         <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                         Quản lý booking
@@ -95,6 +109,9 @@
                     <div class="card-header">
                         <i class="fas fa-table me-1"></i>
                         Bảng dữ liệu Tour
+                    </div>
+                    <div class="">
+                        <button class="btn btn-primary m-4" data-toggle="modal" onclick="addTourModel()" data-target="#addTourModal">Thêm mới tour</button>
                     </div>
                     <div class="card-body">
                         <table id="datatablesSimple">
@@ -146,11 +163,89 @@
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" onclick="hideDeleteModal()" data-dismiss="modal">Hủy</button>
-                                        <button type="button" class="btn btn-danger" data-id="" onclick="deleteUserAction()" id="confirmDeleteBtn">Xóa</button>
+                                        <button type="button" class="btn btn-danger" data-id="" onclick="deleteTourAction()" id="confirmDeleteBtn">Xóa</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+
+
+                        <div class="modal fade"  id="addTourModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" style="max-width: 1200px;">
+                                <div class="modal-content p-4">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title p-2" id="addModalLabel">Thêm mới tin tour</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="addTourForm">
+                                            <input type="hidden"  name="id" value="id">
+                                            <div class="form-group">
+                                                <label for="ten_tour">Tên tour</label>
+                                                <input type="text" class="form-control"  name="ten_tour">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="gioi_thieu_tour">Giới thiệu tour</label>
+                                                <input type="text" class="form-control"  name="gioi_thieu_tour">
+                                            </div>
+                                            <div class="form-group" >
+                                                <label for="noi_dung_tour_add">Nội dung tour</label>
+                                                <textarea class="form-control" id="noi_dung_tour_add" name="noi_dung_tour" rows="6"></textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="so_ngay">Số ngày</label>
+                                                <input type="number" class="form-control" name="so_ngay">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="diem_den">Điểm đến</label>
+                                                <input type="text" class="form-control"  name="diem_den">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="loai_tour">Loại tour</label>
+                                                <select class="form-control" name="loai_tour">
+                                                    <option value="1">Tour trong nước</option>
+                                                    <option value="2">Tour nước ngoài</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="anh_tour">Ảnh tour</label>
+                                                <input type="file" class="form-control-file" id="anh_tour_add" name="anh_tour">
+                                                <img src="" alt="" style="width: 50%; padding: 4px 0;" id="anh_tour_view_add">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="ngay_khoi_hanh">Ngày khởi hành</label>
+                                                <input type="date" pattern="\d{1,2}/\d{1,2}/\d{4}" required class="form-control datepicker" name="ngay_khoi_hanh">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="ngay_ket_thuc">Ngày kết thúc</label>
+                                                <input type="date" pattern="\d{1,2}/\d{1,2}/\d{4}" required class="form-control datepicker" name="ngay_ket_thuc">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="gia_tour">Giá tour</label>
+                                                <input type="number" class="form-control datepicker" name="gia_tour">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="diem_khoi_hanh">Điểm khởi hành</label>
+                                                <input type="text" class="form-control"  name="diem_khoi_hanh">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="trang_thai">Trạng thái</label>
+                                                <select class="form-control" name="trang_thai">
+                                                    <option value="0">Ngừng hoạt động</option>
+                                                    <option value="1">Đang hoạt động</option>
+                                                </select>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-danger" onclick="hideAddModal()" data-dismiss="modal">Đóng</button>
+                                        <button type="button" class="btn btn-primary" onclick="submitAddForm()">Thêm mới</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
 
                         <div class="modal fade "  id="editTourModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
                             <div class="modal-dialog" style="max-width: 1200px;">
@@ -195,11 +290,15 @@
                                             </div>
                                             <div class="form-group">
                                                 <label for="ngay_khoi_hanh">Ngày khởi hành</label>
-                                                <input type="date" class="form-control datepicker" id="ngay_khoi_hanh" name="ngay_khoi_hanh">
+                                                <input type="date" pattern="\d{1,2}/\d{1,2}/\d{4}" required class="form-control datepicker" id="ngay_khoi_hanh" name="ngay_khoi_hanh">
                                             </div>
                                             <div class="form-group">
                                                 <label for="ngay_ket_thuc">Ngày kết thúc</label>
-                                                <input type="date" class="form-control datepicker" id="ngay_ket_thuc" name="ngay_ket_thuc">
+                                                <input type="date" pattern="\d{1,2}/\d{1,2}/\d{4}" required class="form-control datepicker" id="ngay_ket_thuc" name="ngay_ket_thuc">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="gia_tour">Giá tour</label>
+                                                <input type="number" class="form-control datepicker" id="gia_tour" name="gia_tour">
                                             </div>
                                             <div class="form-group">
                                                 <label for="diem_khoi_hanh">Điểm khởi hành</label>
@@ -238,9 +337,36 @@
 <script src="https://cdn.ckeditor.com/ckeditor5/37.0.1/classic/ckeditor.js"></script>
 <script>
 
+    function deleteTourAction() {
+        let id = $('#deleteModal input[name="deleteId"]').val();
+        $.ajax({
+            url: '/api/tour/delete/' + id,
+            type: 'DELETE',
+            success: function(response) {
+                // Nếu xóa thành công, cập nhật lại bảng dữ liệu
+                alert(response.message);
+                location.reload();
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                // Nếu xóa không thành công, thông báo lỗi
+                alert('Xóa người dùng không thành công: ' + textStatus + ' ' + errorThrown);
+            }
+        });
+
+        // Đóng modal xóa
+        $('#deleteModal').modal('hide');
+
+    }
+
+    function addTourModel() {
+        $("#addTourModal").modal('show');
+    }
 
     function hideModal() {
         $("#editTourModal").modal('hide');
+    }
+    function hideAddModal() {
+        $("#addTourModal").modal('hide');
     }
 
     function hideDeleteModal() {
@@ -248,10 +374,20 @@
     }
 
     let ckEditor;
+    let ckEditor2;
     ClassicEditor
         .create( document.querySelector( '#noi_dung_tour' ) )
         .then( editor => {
             ckEditor = editor;
+        } )
+        .catch( error => {
+            console.error( error );
+        } );
+
+    ClassicEditor
+        .create( document.querySelector( '#noi_dung_tour_add' ) )
+        .then( editor => {
+            ckEditor2 = editor;
         } )
         .catch( error => {
             console.error( error );
@@ -265,20 +401,32 @@
             success: function(data) {
                 console.log(data);
                 // Hiển thị modal sửa thông tin user và điền dữ liệu vào form
-                console.log(data);
                 $('#id').val(data.data.id);
                 $('#ten_tour').val(data.data.ten_tour);
                 $('#gioi_thieu_tour').val(data.data.gioi_thieu_tour);
                 $('#so_ngay').val(data.data.so_ngay);
-                // $('#noi_dung_tour').val(data.data.noi_dung_tour);
-                $('#ngay_khoi_hanh').val(moment(data.data.ngay_khoi_hanh).format('YYYY-MM-DD'));
-                $('#ngay_ket_thuc').val(moment(data.data.ngay_ket_thuc).format('YYYY-MM-DD'));
+
+                const dateStr = data.data.ngay_khoi_hanh;
+                const momentDate = moment(dateStr, "DD-MM-YYYY");
+                const formattedDate = momentDate.format("YYYY-MM-DD");
+                $('#ngay_khoi_hanh').val(formattedDate);
+
+
+                const dateStr2 = data.data.ngay_ket_thuc;
+                const momentDate2 = moment(dateStr2, "DD-MM-YYYY");
+                const formattedDate2 = momentDate2.format("YYYY-MM-DD");
+                $('#ngay_ket_thuc').val(formattedDate2);
+
                 $('#diem_den').val(data.data.diem_den);
+                $('#gia_tour').val(data.data.gia_tour);
                 $('#loai_tour').val(data.data.loai_tour);
-                $('#anh_tour_view').attr('src', data.data.anh_tour);
+                // $('#anh_tour').val(data.data.anh_tour);
+                $('#anh_tour_view').attr('src', '/public/img/'+data.data.anh_tour);
                 $('#diem_khoi_hanh').val(data.data.diem_khoi_hanh);
                 $('#trang_thai').val(data.data.trang_thai);
                 $('#editTourModal').modal('show');
+
+
                 ckEditor.setData(data.data.noi_dung_tour);
             },
             error: function(xhr, status, error) {
@@ -294,6 +442,77 @@
         submitEditForm();
     });
 
+    function submitAddForm() {
+
+        var ten_tour = $('#addTourModal input[name="ten_tour"]').val();
+        var gioi_thieu_tour = $('#addTourModal input[name="gioi_thieu_tour"]').val();
+        var so_ngay = $('#addTourModal input[name="so_ngay"]').val();
+        var ngay_ket_thuc = $('#addTourModal input[name="ngay_ket_thuc"]').val();
+        var diem_den = $('#addTourModal input[name="diem_den"]').val();
+        var loai_tour = $('#addTourModal select[name="loai_tour"]').val();
+        var diem_khoi_hanh = $('#addTourModal input[name="diem_khoi_hanh"]').val();
+        var trang_thai = $('#addTourModal select[name="trang_thai"]').val();
+        var gia_tour = $('#addTourModal input[name="gia_tour"]').val();
+        var noi_dung_tour = ckEditor2.getData();
+        var ngay_khoi_hanh = $('#addTourModal input[name="ngay_khoi_hanh"]').val();
+
+        var tourDTO = {
+            ten_tour:ten_tour,
+            gioi_thieu_tour:gioi_thieu_tour,
+            so_ngay:so_ngay,
+            ngay_khoi_hanh:ngay_khoi_hanh,
+            ngay_ket_thuc:ngay_ket_thuc,
+            diem_den:diem_den+'/'+ngay_khoi_hanh+'/'+ngay_ket_thuc,
+            loai_tour:loai_tour,
+            diem_khoi_hanh:diem_khoi_hanh,
+            trang_thai:trang_thai,
+            gia_tour:gia_tour,
+            noi_dung_tour:noi_dung_tour
+        };
+
+        console.log(tourDTO);
+
+        let image = document.getElementById("anh_tour_add").files[0];
+
+        const formData2 = new FormData();
+
+        formData2.append('image', image);
+
+        // Gửi yêu cầu Ajax
+        $.ajax({
+            url: "http://localhost:8085/api/tour/add",
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify(tourDTO),
+            success: function(data) {
+                // Cập nhật dữ liệu thành công, đóng modal và tải lại trang
+                $("#addTourModal").modal("hide");
+                console.log('đã vào đây 1');
+                $.ajax({
+                    url: "http://localhost:8085/api/tour/add/image",
+                    type: "POST",
+                    data: formData2,
+                    processData: false,
+                    contentType: false,
+                    success: function(response){
+                        console.log('đã vào đây 2');
+                        alert("Sửa thành công !")
+                        location.reload();
+                    },
+                    error: function(jqXHR, textStatus, errorThrown){
+                        console.log(textStatus, errorThrown);
+                    }
+                });
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                // Xử lý lỗi
+                console.log("Error:", jqXHR.responseText);
+            }
+        });
+
+
+    }
+
     function submitEditForm() {
         // Lấy giá trị từ các input trong form
         var id = $("#id").val();
@@ -301,13 +520,15 @@
         var ten_tour = $('#ten_tour').val();
         var gioi_thieu_tour = $('#gioi_thieu_tour').val();
         var so_ngay = $('#so_ngay').val();
-        var ngay_khoi_hanh = $('#ngay_khoi_hanh').val();
-        var ngay_ket_thuc = $('#ngay_ket_thuc').val();
         var diem_den = $('#diem_den').val();
         var loai_tour = $('#loai_tour').val();
         var diem_khoi_hanh = $('#diem_khoi_hanh').val();
         var trang_thai = $('#trang_thai').val();
+        var gia_tour = $('#gia_tour').val();
         var noi_dung_tour = ckEditor.getData();
+        var ngay_khoi_hanh = $('#ngay_khoi_hanh').val();
+        var ngay_ket_thuc = $('#ngay_ket_thuc').val();
+
         // Tạo đối tượng UpdateUserDTO để lưu trữ dữ liệu cần cập nhật
         var updateTourDTO = {
             ten_tour:ten_tour,
@@ -315,18 +536,15 @@
             so_ngay:so_ngay,
             ngay_khoi_hanh:ngay_khoi_hanh,
             ngay_ket_thuc:ngay_ket_thuc,
-            diem_den:diem_den,
+            diem_den:diem_den+'/'+ngay_khoi_hanh+'/'+ngay_ket_thuc,
             loai_tour:loai_tour,
             diem_khoi_hanh:diem_khoi_hanh,
             trang_thai:trang_thai,
+            gia_tour:gia_tour,
             noi_dung_tour:noi_dung_tour
         };
 
         var image = document.getElementById("anh_tour").files[0];
-
-
-
-        console.log(JSON.stringify(updateTourDTO));
 
         const formData2 = new FormData();
 
@@ -340,30 +558,30 @@
             data: JSON.stringify(updateTourDTO),
             success: function(data) {
                 // Cập nhật dữ liệu thành công, đóng modal và tải lại trang
-                console.log(data)
                 $("#editTourModal").modal("hide");
-                alert("Sửa thành công !")
-                location.reload();
+                console.log('đã vào đây 1');
+                $.ajax({
+                    url: "http://localhost:8085/api/tour/update/image/"+id,
+                    type: "PUT",
+                    data: formData2,
+                    processData: false,
+                    contentType: false,
+                    success: function(response){
+                        console.log('đã vào đây 2');
+                        alert("Sửa thành công !")
+                        location.reload();
+                    },
+                    error: function(jqXHR, textStatus, errorThrown){
+                        console.log(textStatus, errorThrown);
+                    }
+                });
+
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 // Xử lý lỗi
                 console.log("Error:", jqXHR.responseText);
             }
         });
-
-        // $.ajax({
-        //     url: "http://localhost:8085/api/tour/update/image"+id,
-        //     type: "PUT",
-        //     data: formData2,
-        //     processData: false,
-        //     contentType: false,
-        //     success: function(response){
-        //         console.log(response);
-        //     },
-        //     error: function(jqXHR, textStatus, errorThrown){
-        //         console.log(textStatus, errorThrown);
-        //     }
-        // });
     }
 
     function readURL(input) {
@@ -380,7 +598,7 @@
 
     function deleteTour(id) {
         // Hiển thị modal xác nhận xóa user
-        $('#deleteModal input[name="id"]').val(id);
+        $('#deleteModal input[name="deleteId"]').val(id);
         $('#deleteModal').modal('show');
     }
 
@@ -400,7 +618,12 @@
                 { "data": "id" },
                 { "data": "ten_tour" },
                 { "data": "so_ngay" },
-                { "data": "ngay_khoi_hanh" },
+                { "data": "ngay_khoi_hanh",
+                    "render": function ( data, type, row ) {
+
+                        return data;
+                    }
+                },
                 { "data": "diem_den" },
                 { "data": "loai_tour" },
                 { "data": "diem_khoi_hanh" },
@@ -431,8 +654,11 @@
                 {
                     "data": null,
                     "render": function ( data, type, row ) {
-                        return '<button type="button" class="btn btn-primary btn-sm mx-2" data-toggle="modal" data-target="#editTourModal" onclick="editTour('+row.id+')"><i class="fa-solid fa-pen-to-square"></i></button>' +
-                            '<button type="button" class="btn btn-danger btn-sm ml-2" onclick="deleteTour('+row.id+')"><i class="fa-solid fa-trash"></i></button>';
+                        return '<div>'+'<button type="button" class="btn btn-primary btn-sm mx-2" data-toggle="modal" data-target="#editTourModal" onclick="editTour('+row.id+')"><i class="fa-solid fa-pen-to-square"></i></button>' +
+                            '<button type="button" class="btn btn-danger btn-sm ml-2" onclick="deleteTour('+row.id+')"><i class="fa-solid fa-trash"></i></button>'+'</div>'+
+                          '<div>'+ '<a href="/admin/tourImage/'+row.id+'"  class="btn btn-sm btn-info"><i class="fa-solid fa-image"></i></a>'+
+                                    '<a href="/admin/tourStart/'+row.id+'"  class="btn btn-sm btn-info"><i class="fa-solid fa-calendar-days"></i></a>'+'</div>';
+
                     }
                 },
             ]

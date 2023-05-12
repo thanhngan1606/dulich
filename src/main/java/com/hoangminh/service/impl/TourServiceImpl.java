@@ -1,9 +1,6 @@
 package com.hoangminh.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -42,6 +39,16 @@ public class TourServiceImpl implements TourService {
 	public TourDTO findTourById(Long id) {
 		TourDTO tourDTO = this.tourRepository.findTourById(id);
 
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(tourDTO.getNgay_khoi_hanh());
+		calendar.add(Calendar.DAY_OF_MONTH, 1);
+		tourDTO.setNgay_khoi_hanh(calendar.getTime());
+
+
+		calendar.setTime(tourDTO.getNgay_ket_thuc());
+		calendar.add(Calendar.DAY_OF_MONTH, 1);
+		tourDTO.setNgay_ket_thuc(calendar.getTime());
+
 		if(tourDTO!=null) {
 			return tourDTO;
 		}
@@ -68,16 +75,16 @@ public class TourServiceImpl implements TourService {
 		tour.setTen_tour(tourDTO.getTen_tour());
 		tour.setAnh_tour(tourDTO.getAnh_tour());
 		tour.setLoai_tour(tourDTO.getLoai_tour());
-		tour.setGia_tour(tour.getGia_tour());
+		tour.setGia_tour(tourDTO.getGia_tour());
 		tour.setGioi_thieu_tour(tourDTO.getGioi_thieu_tour());
 		tour.setAnh_tour(tourDTO.getAnh_tour());
 		tour.setDiem_den(tourDTO.getDiem_den());
 		tour.setNoi_dung_tour(tourDTO.getNoi_dung_tour());
 		tour.setDiem_khoi_hanh(tourDTO.getDiem_khoi_hanh());
 		tour.setNgay_khoi_hanh(tourDTO.getNgay_khoi_hanh());
-		tour.setSo_ngay(tour.getSo_ngay());
-		tour.setTrang_thai(1);
-		tour.setNgay_ket_thuc(null);
+		tour.setSo_ngay(tourDTO.getSo_ngay());
+		tour.setTrang_thai(tourDTO.getTrang_thai());
+		tour.setNgay_ket_thuc(tourDTO.getNgay_ket_thuc());
 
 		return this.tourRepository.save(tour);
 	}

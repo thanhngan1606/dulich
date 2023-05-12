@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TourStartDTO {
+	private Long id;
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private Date ngay_khoi_hanh;
 }

@@ -42,6 +42,7 @@ public class Tour {
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private Date ngay_khoi_hanh;
 
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private Date ngay_ket_thuc;
 	
 	private String diem_den;

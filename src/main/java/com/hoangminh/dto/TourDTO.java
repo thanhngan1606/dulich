@@ -13,6 +13,7 @@ import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Data
 @NoArgsConstructor
@@ -28,8 +29,10 @@ public class TourDTO {
 	
 	private String noi_dung_tour;
 
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private Date ngay_ket_thuc;
 
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private Date ngay_khoi_hanh;
 
 	private String diem_den;
