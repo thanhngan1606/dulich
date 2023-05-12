@@ -34,8 +34,6 @@ public class TourServiceImpl implements TourService {
 
 	@Override
 	public Page<TourDTO> findAllTour(String ten_tour,Long gia_tour_from,Long gia_tour_to,Date ngay_khoi_hanh,Integer loai_tour,Pageable pageable) {
-
-
 		Page<TourDTO> page = this.tourRepository.findAll(ten_tour, gia_tour_from, gia_tour_to,ngay_khoi_hanh, loai_tour, pageable);
 		return page;
 	}
@@ -47,7 +45,6 @@ public class TourServiceImpl implements TourService {
 		if(tourDTO!=null) {
 			return tourDTO;
 		}
-
 		return null;
 	}
 
@@ -57,7 +54,11 @@ public class TourServiceImpl implements TourService {
 			return true;
 		}
 		return false;
+	}
 
+	@Override
+	public Tour findFirstByOrderByIdDesc() {
+		return this.tourRepository.findFirstByOrderByIdDesc();
 	}
 
 	@Override
@@ -99,7 +100,7 @@ public class TourServiceImpl implements TourService {
 			updatedTour.setNgay_khoi_hanh(newTour.getNgay_khoi_hanh());
 			updatedTour.setSo_ngay(newTour.getSo_ngay());
 			updatedTour.setTrang_thai(newTour.getTrang_thai());
-			updatedTour.setNgay_ket_thuc(null);
+			updatedTour.setNgay_ket_thuc(newTour.getNgay_ket_thuc());
 
 			return this.tourRepository.save(updatedTour);
 		}
@@ -115,9 +116,7 @@ public class TourServiceImpl implements TourService {
 				this.tourRepository.deleteById(id);
 				return true;
 			}
-
 		}
 		return false;
 	}
-
 }

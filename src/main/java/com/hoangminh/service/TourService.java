@@ -19,6 +19,8 @@ public interface TourService {
 	
 	boolean saveTour(Tour tour);
 
+	Tour findFirstByOrderByIdDesc();
+
 	Tour addTour(TourDTO tourDTO);
 
 	Tour updateTour(TourDTO newTour,Long id);

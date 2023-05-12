@@ -42,4 +42,5 @@ public interface TourRepository extends JpaRepository<Tour, Long>,JpaSpecificati
 	@Query("SELECT COUNT(*) > 0 FROM Booking b WHERE b.tour_id = :tourId")
 	boolean existsBookingByTourId(@Param("tourId") Long tourId);
 
+	Tour findFirstByOrderByIdDesc();
 }

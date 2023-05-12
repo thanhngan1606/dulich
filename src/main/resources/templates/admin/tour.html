@@ -13,6 +13,11 @@
     <link href="/public/admin/css/styles.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.3/moment.min.js"></script>
     /* Kindly upvote this answer if it helped you. */
+    <style>
+        label {
+            padding: 10px 0;
+        }
+    </style>
 <!--    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>-->
 </head>
 <body class="sb-nav-fixed">
@@ -132,12 +137,12 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel">Xóa người dùng</h5>
+                                        <h5 class="modal-title" id="exampleModalLabel">Xóa tour</h5>
                                         <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <input type="hidden" id="deleteId" name="deleteId" value="deleteId">
                                     <div class="modal-body">
-                                        <p>Bạn có chắc chắn muốn xóa người dùng này?</p>
+                                        <p>Bạn có chắc chắn muốn xóa tour này?</p>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" onclick="hideDeleteModal()" data-dismiss="modal">Hủy</button>
@@ -186,6 +191,7 @@
                                             <div class="form-group">
                                                 <label for="anh_tour">Ảnh tour</label>
                                                 <input type="file" class="form-control-file" id="anh_tour" name="anh_tour">
+                                                <img src="" alt="" style="width: 50%; padding: 4px 0;" id="anh_tour_view">
                                             </div>
                                             <div class="form-group">
                                                 <label for="ngay_khoi_hanh">Ngày khởi hành</label>
@@ -215,7 +221,7 @@
                                 </div>
                             </div>
                         </div>
-                        </div>
+                    </div>
                 </div>
             </div>
         </main>
@@ -229,42 +235,27 @@
 <!--<script src="/public/admin/js/jquery.js"></script>-->
 <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.25/datatables.min.js"></script>
 <script src="/public/admin/js/all.min.js"></script>
-<script src="//cdn.ckeditor.com/4.21.0/standard/ckeditor.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/ckeditor-autogrow@1.0.0/plugin.min.js"></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/37.0.1/classic/ckeditor.js"></script>
 <script>
 
 
     function hideModal() {
-        $("#editModal").modal('hide');
+        $("#editTourModal").modal('hide');
     }
 
     function hideDeleteModal() {
         $("#deleteModal").modal('hide');
     }
-    function deleteUser(id) {
-        $('#deleteModal').modal('show');
-        $('#deleteModal input[name="deleteId"]').val(id);
-    }
 
-    function deleteUserAction() {
-        let id = $('#deleteModal input[name="deleteId"]').val();
-        $.ajax({
-            url: '/api/user/delete/' + id,
-            type: 'DELETE',
-            success: function(response) {
-                // Nếu xóa thành công, cập nhật lại bảng dữ liệu
-                alert(response.message);
-                location.reload();
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                // Nếu xóa không thành công, thông báo lỗi
-                alert('Xóa người dùng không thành công: ' + textStatus + ' ' + errorThrown);
-            }
-        });
-
-        // Đóng modal xóa
-        $('#deleteModal').modal('hide');
-    }
+    let ckEditor;
+    ClassicEditor
+        .create( document.querySelector( '#noi_dung_tour' ) )
+        .then( editor => {
+            ckEditor = editor;
+        } )
+        .catch( error => {
+            console.error( error );
+        } );
 
     function editTour(id) {
         // Gọi API lấy thông tin user theo id
@@ -274,20 +265,21 @@
             success: function(data) {
                 console.log(data);
                 // Hiển thị modal sửa thông tin user và điền dữ liệu vào form
-                console.log($('#ten_tour'))
+                console.log(data);
+                $('#id').val(data.data.id);
                 $('#ten_tour').val(data.data.ten_tour);
                 $('#gioi_thieu_tour').val(data.data.gioi_thieu_tour);
                 $('#so_ngay').val(data.data.so_ngay);
-                $('#noi_dung_tour').val(data.data.noi_dung_tour);
+                // $('#noi_dung_tour').val(data.data.noi_dung_tour);
                 $('#ngay_khoi_hanh').val(moment(data.data.ngay_khoi_hanh).format('YYYY-MM-DD'));
-                $('#ngay_ket_thuc').val(moment(data.data.ngay_ket_thuc).format('DD-MM-YYYY'));
+                $('#ngay_ket_thuc').val(moment(data.data.ngay_ket_thuc).format('YYYY-MM-DD'));
                 $('#diem_den').val(data.data.diem_den);
                 $('#loai_tour').val(data.data.loai_tour);
-                $('#anh_tour').attr('src', data.data.anh_tour);
+                $('#anh_tour_view').attr('src', data.data.anh_tour);
                 $('#diem_khoi_hanh').val(data.data.diem_khoi_hanh);
                 $('#trang_thai').val(data.data.trang_thai);
-
                 $('#editTourModal').modal('show');
+                ckEditor.setData(data.data.noi_dung_tour);
             },
             error: function(xhr, status, error) {
                 // Xử lý lỗi khi không lấy được thông tin user
@@ -297,7 +289,7 @@
     }
 
 
-    $('#editUserForm').submit(function(e) {
+    $('#editTourModal').submit(function(e) {
         e.preventDefault(); // Ngăn chặn sự kiện mặc định của form
         submitEditForm();
     });
@@ -305,35 +297,51 @@
     function submitEditForm() {
         // Lấy giá trị từ các input trong form
         var id = $("#id").val();
-        var username = $("#username").val();
-        var hoTen = $("#ho_ten").val();
-        var sdt = $("#sdt").val();
-        var gioiTinh = $("#gioi_tinh").val();
-        var email = $("#email").val();
-        var diaChi = $("#dia_chi").val();
 
+        var ten_tour = $('#ten_tour').val();
+        var gioi_thieu_tour = $('#gioi_thieu_tour').val();
+        var so_ngay = $('#so_ngay').val();
+        var ngay_khoi_hanh = $('#ngay_khoi_hanh').val();
+        var ngay_ket_thuc = $('#ngay_ket_thuc').val();
+        var diem_den = $('#diem_den').val();
+        var loai_tour = $('#loai_tour').val();
+        var diem_khoi_hanh = $('#diem_khoi_hanh').val();
+        var trang_thai = $('#trang_thai').val();
+        var noi_dung_tour = ckEditor.getData();
         // Tạo đối tượng UpdateUserDTO để lưu trữ dữ liệu cần cập nhật
-        var updateUserDTO = {
-            username: username,
-            ho_ten: hoTen,
-            sdt: sdt,
-            gioi_tinh: gioiTinh,
-            email: email,
-            dia_chi: diaChi
+        var updateTourDTO = {
+            ten_tour:ten_tour,
+            gioi_thieu_tour:gioi_thieu_tour,
+            so_ngay:so_ngay,
+            ngay_khoi_hanh:ngay_khoi_hanh,
+            ngay_ket_thuc:ngay_ket_thuc,
+            diem_den:diem_den,
+            loai_tour:loai_tour,
+            diem_khoi_hanh:diem_khoi_hanh,
+            trang_thai:trang_thai,
+            noi_dung_tour:noi_dung_tour
         };
-        console.log(updateUserDTO)
+
+        var image = document.getElementById("anh_tour").files[0];
+
+
+
+        console.log(JSON.stringify(updateTourDTO));
+
+        const formData2 = new FormData();
+
+        formData2.append('image', image);
 
         // Gửi yêu cầu Ajax
         $.ajax({
-            url: "http://localhost:8085/api/user/update/" + id,
+            url: "http://localhost:8085/api/tour/update/" + id,
             type: "PUT",
-            data: JSON.stringify(updateUserDTO),
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
+            contentType: 'application/json',
+            data: JSON.stringify(updateTourDTO),
             success: function(data) {
                 // Cập nhật dữ liệu thành công, đóng modal và tải lại trang
                 console.log(data)
-                $("#editModal").modal("hide");
+                $("#editTourModal").modal("hide");
                 alert("Sửa thành công !")
                 location.reload();
             },
@@ -342,11 +350,47 @@
                 console.log("Error:", jqXHR.responseText);
             }
         });
+
+        // $.ajax({
+        //     url: "http://localhost:8085/api/tour/update/image"+id,
+        //     type: "PUT",
+        //     data: formData2,
+        //     processData: false,
+        //     contentType: false,
+        //     success: function(response){
+        //         console.log(response);
+        //     },
+        //     error: function(jqXHR, textStatus, errorThrown){
+        //         console.log(textStatus, errorThrown);
+        //     }
+        // });
+    }
+
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                $("#anh_tour_view").attr("src", e.target.result);
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function deleteTour(id) {
+        // Hiển thị modal xác nhận xóa user
+        $('#deleteModal input[name="id"]').val(id);
+        $('#deleteModal').modal('show');
     }
 
 
-
     $(document).ready(function() {
+
+        $("#anh_tour").change(function() {
+            readURL(this);
+        });
+
         $('#datatablesSimple').DataTable({
             "ajax": {
                 "url": "http://localhost:8085/api/tour/getAllTour?pageIndex=0&pageSize=100",
@@ -376,7 +420,11 @@
                 },
                 { "data": "gia_tour",
                     "render": function (data, type, row, meta) {
+                    if(data!=null) {
                         return data.toLocaleString();
+                    }
+
+                        return "undifined";
 
                     }
                 },
@@ -389,16 +437,6 @@
                 },
             ]
         } );
-
-
-
-
-        function deleteUser(id) {
-            // Hiển thị modal xác nhận xóa user
-            $('#deleteModal input[name="id"]').val(id);
-            $('#deleteModal').modal('show');
-        }
-
     } );
 </script>
 </body>

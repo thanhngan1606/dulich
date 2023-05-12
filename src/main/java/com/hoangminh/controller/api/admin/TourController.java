@@ -46,7 +46,6 @@ public class TourController {
         Page<TourDTO> page = this.tourService.findAllTour(ten_tour,gia_tour_from,gia_tour_to,ngay_khoi_hanh,loai_tour, PageRequest.of(pageIndex,pageSize));
 
         return new ResponseDTO("Thành công",page.getContent());
-
     }
 
     @GetMapping("/{id}")
@@ -59,30 +58,60 @@ public class TourController {
         return new ResponseDTO("Thất bại" ,null);
     }
 
-    @PostMapping("/add")
-    public ResponseDTO createTour(@RequestBody TourDTO tourDTO, @RequestParam("image")MultipartFile image) {
-        String uploadDir = "/upload";
+    @PostMapping("/test-up-anh")
+    public ResponseDTO testUpAnh(@RequestParam("image")MultipartFile image) {
+        String uploadDir = "HoangMinhWeb/src/main/resources/static/public/img";
+
+        try {
+            // Lưu ảnh vào thư mục "upload"
+            String fileName = image.getOriginalFilename();
+            FileUploadUtil.saveFile(uploadDir, fileName, image);
+
+            return new ResponseDTO("Thành công",fileName);
+        } catch (IOException  e) {
+            // Xử lý exception
+            log.info("Lỗi upload file: {}",e.getMessage());
+        }
+        return new ResponseDTO("Thêm thất bại",null);
+    }
+
+    @PostMapping("/add/image")
+    public ResponseDTO createTourImage(@RequestParam("image")MultipartFile image) {
+        String uploadDir = "/public/upload";
+
+        Tour tour = tourService.findFirstByOrderByIdDesc();
+
         try {
             // Lưu ảnh vào thư mục "upload"
             String fileName = image.getOriginalFilename();
             FileUploadUtil.saveFile(uploadDir, fileName, image);
 
             // Lưu thông tin của tour vào cơ sở dữ liệu
-            tourDTO.setAnh_tour(fileName);
-            return new ResponseDTO("Thành công",this.tourService.addTour(tourDTO));
-
+            tour.setAnh_tour(fileName);
+            return new ResponseDTO("Thành công",this.tourService.saveTour(tour));
         } catch (IOException  e) {
             // Xử lý exception
             log.info("Lỗi upload file: {}",e.getMessage());
         }
         return new ResponseDTO("Thêm thất bại",null);
+    }
+
+    @PostMapping("/add")
+    public ResponseDTO createTour(@RequestBody TourDTO tourDTO) {
+        Tour tour = this.tourService.addTour(tourDTO);
+        if(tour!=null) {
+            return new ResponseDTO("Thành công",tour);
+        }
+        return new ResponseDTO("Thêm thất bại",null);
 
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseDTO updateTour(@PathVariable("id") Long id,@RequestBody TourDTO tourDTO,@RequestParam("image") MultipartFile image) {
 
-        String uploadDir = "/upload";
+    @PutMapping("/update/image/{id}")
+    public ResponseDTO updateTourImage(@PathVariable("id") Long id,@RequestParam("image") MultipartFile image) {
+        String uploadDir = "/public/upload";
+
+        TourDTO tourDTO = this.tourService.findTourById(id);
         try {
             // Lưu ảnh vào thư mục "upload"
             String fileName = image.getOriginalFilename();
@@ -98,6 +127,16 @@ public class TourController {
         } catch (IOException  e) {
             // Xử lý exception
             log.info("Lỗi upload file: {}",e.getMessage());
+        }
+        return new ResponseDTO("Update thất bại",null);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseDTO updateTour(@PathVariable("id") Long id,@RequestBody TourDTO tourDTO) {
+
+        Tour updateTour = this.tourService.updateTour(tourDTO,id);
+        if(updateTour!=null) {
+            return new ResponseDTO("Thành công",updateTour);
         }
 
         return new ResponseDTO("Update thất bại",null);
@@ -118,9 +157,7 @@ public class TourController {
 
     @PostMapping("/add-image/{id}")
     public ResponseDTO addImage(@PathVariable("id") Long id,@RequestParam("image") MultipartFile image) {
-
-
-        String uploadDir = "/upload";
+        String uploadDir = "/public/upload";
         try {
             // Lưu ảnh vào thư mục "upload"
             String fileName = image.getOriginalFilename()+id.toString();
@@ -130,8 +167,6 @@ public class TourController {
 
                 return new ResponseDTO("Thêm thành công",this.imageService.addToTour(id,fileName));
             }
-
-
         } catch (IOException  e) {
             // Xử lý exception
             log.info("Lỗi upload file: {}",e.getMessage());
