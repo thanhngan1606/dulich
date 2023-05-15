@@ -12,6 +12,23 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.25/datatables.min.css"/>
     <link href="/public/admin/css/styles.css" rel="stylesheet" />
 <!--    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>-->
+    <style>
+        label {
+            padding: 10px 0;
+        }
+        table.dataTable tbody td:last-child {
+            text-align: center;
+        }
+        table.dataTable tbody td:last-child button{
+            margin: 4px;
+        }
+        .dataTables_wrapper td {
+            font-size: 13px;
+        }
+        .dataTables_wrapper thead th {
+            font-size: 13px;
+        }
+    </style>
 </head>
 <body class="sb-nav-fixed">
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
@@ -142,16 +159,16 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel">Xóa người dùng</h5>
+                                        <h5 class="modal-title" id="exampleModalLabel">Xóa đơn booking</h5>
                                         <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <input type="hidden" id="deleteId" name="deleteId" value="deleteId">
                                     <div class="modal-body">
-                                        <p>Bạn có chắc chắn muốn xóa người dùng này?</p>
+                                        <p>Bạn có chắc chắn muốn xóa đơn booking này?</p>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" onclick="hideDeleteModal()" data-dismiss="modal">Hủy</button>
-                                        <button type="button" class="btn btn-danger" data-id="" onclick="deleteUserAction()" id="confirmDeleteBtn">Xóa</button>
+                                        <button type="button" class="btn btn-danger" data-id="" onclick="deleteBookingAction()" id="confirmDeleteBtn">Xóa</button>
                                     </div>
                                 </div>
                             </div>
@@ -162,34 +179,20 @@
                             <div class="modal-dialog">
                                 <div class="modal-content p-4">
                                     <div class="modal-header">
-                                        <h5 class="modal-title p-2" id="editModalLabel">Sửa thông tin user</h5>
+                                        <h5 class="modal-title p-2" id="editModalLabel">Cập nhật trạng thái cho đơn booking</h5>
                                     </div>
                                     <div class="modal-body">
-                                        <form id="editUserForm">
+                                        <form id="editBookingForm">
                                             <input type="hidden" id="id" name="id" value="id">
-                                            <div class="form-group mb-2">
-                                                <label for="username">Username</label>
-                                                <input type="text" class="form-control" id="username" name="username" required>
-                                            </div>
-                                            <div class="form-group mb-2">
-                                                <label for="ho_ten">Họ tên</label>
-                                                <input type="text" class="form-control" id="ho_ten" name="ho_ten" required>
-                                            </div>
-                                            <div class="form-group mb-2">
-                                                <label for="sdt">Số điện thoại</label>
-                                                <input type="tel" class="form-control" id="sdt" name="sdt" required>
-                                            </div>
-                                            <div class="form-group mb-2">
-                                                <label for="gioi_tinh">Giới tính</label>
-                                                <input type="text" class="form-control" id="gioi_tinh" name="gioi_tinh" required>
-                                            </div>
-                                            <div class="form-group mb-2">
-                                                <label for="email">Email</label>
-                                                <input type="email" class="form-control" id="email" name="email" required>
-                                            </div>
-                                            <div class="form-group mb-2">
-                                                <label for="dia_chi">Địa chỉ</label>
-                                                <input type="text" class="form-control" id="dia_chi" name="dia_chi" required>
+                                            <div class="form-group">
+                                                <label for="trang_thai">Loại tour</label>
+                                                <select class="form-control" id="trang_thai" name="trang_thai">
+                                                    <option value="0">Đang xử lý</option>
+                                                    <option value="1">Đã thanh toán</option>
+                                                    <option value="2">Đang tiến hành</option>
+                                                    <option value="3">Đã hoàn thành</option>
+                                                    <option value="4">Đã hủy</option>
+                                                </select>
                                             </div>
                                         </form>
                                     </div>
@@ -220,18 +223,20 @@
         $("#editModal").modal('hide');
     }
 
+
+
     function hideDeleteModal() {
         $("#deleteModal").modal('hide');
     }
-    function deleteUser(id) {
+    function deleteBooking(id) {
         $('#deleteModal').modal('show');
         $('#deleteModal input[name="deleteId"]').val(id);
     }
 
-    function deleteUserAction() {
+    function deleteBookingAction() {
         let id = $('#deleteModal input[name="deleteId"]').val();
         $.ajax({
-            url: '/api/user/delete/' + id,
+            url: '/api/booking/delete/' + id,
             type: 'DELETE',
             success: function(response) {
                 // Nếu xóa thành công, cập nhật lại bảng dữ liệu
@@ -248,32 +253,8 @@
         $('#deleteModal').modal('hide');
     }
 
-    function editUser(id) {
-        // Gọi API lấy thông tin user theo id
-        $.ajax({
-            url: '/api/user/' + id,
-            type: 'GET',
-            success: function(result) {
-                // Hiển thị modal sửa thông tin user và điền dữ liệu vào form
-                $('#editModal input[name="id"]').val(result.data.id);
-                $('#editModal input[name="username"]').val(result.data.username);
-                $('#editModal input[name="ho_ten"]').val(result.data.ho_ten);
-                $('#editModal input[name="sdt"]').val(result.data.sdt);
-                $('#editModal input[name="gioi_tinh"]').val(result.data.gioi_tinh);
-                $('#editModal input[name="email"]').val(result.data.email);
-                $('#editModal input[name="dia_chi"]').val(result.data.dia_chi);
-                $('#editModal select[name="role"]').val(result.data.role);
-                $('#editModal').modal('show');
-            },
-            error: function(xhr, status, error) {
-                // Xử lý lỗi khi không lấy được thông tin user
-                console.log(xhr.responseText);
-            }
-        });
-    }
 
-
-    $('#editUserForm').submit(function(e) {
+    $('#editBookingForm').submit(function(e) {
         e.preventDefault(); // Ngăn chặn sự kiện mặc định của form
         submitEditForm();
     });
@@ -281,31 +262,12 @@
     function submitEditForm() {
         // Lấy giá trị từ các input trong form
         var id = $("#id").val();
-        var username = $("#username").val();
-        var hoTen = $("#ho_ten").val();
-        var sdt = $("#sdt").val();
-        var gioiTinh = $("#gioi_tinh").val();
-        var email = $("#email").val();
-        var diaChi = $("#dia_chi").val();
-
-        // Tạo đối tượng UpdateUserDTO để lưu trữ dữ liệu cần cập nhật
-        var updateUserDTO = {
-            username: username,
-            ho_ten: hoTen,
-            sdt: sdt,
-            gioi_tinh: gioiTinh,
-            email: email,
-            dia_chi: diaChi
-        };
-        console.log(updateUserDTO)
+        var trang_thai = $("#trang_thai").val();
 
         // Gửi yêu cầu Ajax
         $.ajax({
-            url: "http://localhost:8085/api/user/update/" + id,
+            url: "http://localhost:8085/api/booking/approve/" + id +"?trang_thai="+trang_thai,
             type: "PUT",
-            data: JSON.stringify(updateUserDTO),
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
             success: function(data) {
                 // Cập nhật dữ liệu thành công, đóng modal và tải lại trang
                 console.log(data)
@@ -318,6 +280,11 @@
                 console.log("Error:", jqXHR.responseText);
             }
         });
+    }
+
+    function editBooking(id) {
+        $('#editModal').modal('show');
+        $('#id').val(id);
     }
 
 
@@ -335,7 +302,10 @@
                 { "data": "ten_tour" },
                 { "data": "so_luong_nguoi" },
                 { "data": "ngay_khoi_hanh" },
-                { "data": "tong_tien" },
+                { "data": "tong_tien" ,"render":function (data,type,row) {
+                        return data.toLocaleString();
+                    }
+                },
                 { "data": "trang_thai", "render": function (data, type, row) {
                         if (data == 0) {
                             return "Đang xử lý";
@@ -364,8 +334,10 @@
                 {
                     "data": null,
                     "render": function ( data, type, row ) {
-                        return '<button type="button" data-toggle="modal" data-target="#editModal" class="btn btn-primary btn-sm mx-2" onclick="editUser('+data.id+')">Sửa</button>' +
-                            '<button type="button" data-toggle="modal" data-target="#deleteModal" class="btn btn-danger btn-sm mx-2" onclick="deleteUser('+data.id+')">Xóa</button>';
+                        return '<div class="d-flex flex-row">'+'<button type="button" class="btn btn-primary btn-sm mx-2" data-toggle="modal" data-target="#editTourModal" onclick="editBooking('+row.id+')"><i class="fa-solid fa-pen-to-square"></i></button>' +
+                            '<button type="button" class="btn btn-danger btn-sm ml-2" onclick="deleteBooking('+row.id+')"><i class="fa-solid fa-trash"></i></button>'+'</div>'+
+                            '<div>'+ '<a href="/admin/tourImage/'+row.id+'"  class="btn btn-sm btn-info mx-2"><i class="fa-solid fa-circle-info"></i></a>'+
+                            '<a href="/admin/tourStart/'+row.id+'"  class="btn btn-sm btn-info"><i class="fa-solid fa-calendar-days"></i></a>'+'</div>';
                     }
                 }
             ]

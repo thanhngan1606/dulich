@@ -16,7 +16,7 @@
 <body class="sb-nav-fixed">
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
     <!-- Navbar Brand-->
-    <a class="navbar-brand ps-3" href="index.html">Quản lý người dùng</a>
+    <a class="navbar-brand ps-3" href="index.html">Quản lý slide cho tour</a>
     <!-- Sidebar Toggle-->
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
     <!-- Navbar Search-->
@@ -87,15 +87,15 @@
     <div id="layoutSidenav_content">
         <main>
             <div class="container-fluid px-4">
-                <h1 class="mt-4">Danh sách người dùng</h1>
+                <h1 id="id_tour_set_title" class="mt-4">Danh sách ảnh slide</h1>
                 <ol class="breadcrumb mb-4">
                     <li class="breadcrumb-item"><a href="index.html">Trang chủ</a></li>
-                    <li class="breadcrumb-item active">Quản lý người dùng</li>
+                    <li class="breadcrumb-item active">Quản lý slide</li>
                 </ol>
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-table me-1"></i>
-                        Bảng dữ liệu ngày khởi hành
+                        Bảng dữ liệu ảnh slide
                     </div>
                     <div class="">
                         <button class="btn btn-primary m-4" data-toggle="modal" onclick="addTourStartModel()" data-target="#addTourModal">Thêm ảnh slide cho tour</button>
@@ -127,13 +127,13 @@
                             <div class="modal-dialog">
                                 <div class="modal-content p-4">
                                     <div class="modal-header">
-                                        <h5 class="modal-title p-2" id="addModalLabel">Thêm mới ngày khởi hành</h5>
+                                        <h5 class="modal-title p-2" id="addModalLabel">Thêm mới ảnh</h5>
                                     </div>
                                     <div class="modal-body">
                                         <form id="addTourForm">
                                             <input type="hidden"  name="id" value="id">
                                             <div class="form-group">
-                                                <label for="image">Ngày khởi hành</label>
+                                                <label for="image">Chọn ảnh</label>
                                                 <input type="file"  id="image" required class="form-control datepicker" name="image">
                                                 <img src="" alt="" style="width: 50%; padding: 4px 0;" id="anh_tour_view">
                                             </div>
@@ -151,12 +151,12 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel">Xóa ngày</h5>
+                                        <h5 class="modal-title" id="exampleModalLabel">Xóa ảnh</h5>
                                         <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <input type="hidden" id="deleteId" name="deleteId" value="deleteId">
                                     <div class="modal-body">
-                                        <p>Bạn có chắc chắn muốn xóa ngày khởi hành này?</p>
+                                        <p>Bạn có chắc chắn muốn xóa ảnh này?</p>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" onclick="hideDeleteModal()" data-dismiss="modal">Hủy</button>
@@ -269,6 +269,8 @@
 
         let id = currentUrl.split("/").pop();
 
+        document.getElementById('id_tour_set_title').innerHTML = "Danh sách ảnh slide của tour id : " +id;
+
         console.log(id);
 
         $('#datatablesSimple').DataTable({
@@ -279,7 +281,7 @@
             "columns": [
                 { "data": "id" },
                 { "data": "url" ,"render": function ( data, type, row ) {
-                        return  `<img src="/public/img/${data}" style="width: 150px; height: 140px;" />`;
+                        return  `<img src="/public/img/${data}" style="width: 200px; height: 140px;" />`;
                     }
                 },
                 {

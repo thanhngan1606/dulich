@@ -23,6 +23,12 @@
         table.dataTable tbody td:last-child button{
             margin: 4px;
         }
+        .dataTables_wrapper td {
+            font-size: 13px;
+        }
+        .dataTables_wrapper thead th {
+            font-size: 13px;
+        }
     </style>
 <!--    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>-->
 </head>
@@ -209,7 +215,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <label for="anh_tour">Ảnh tour</label>
-                                                <input type="file" class="form-control-file" id="anh_tour_add" name="anh_tour">
+                                                <input type="file" class="form-control-file" id="anh_tour_add" required name="anh_tour">
                                                 <img src="" alt="" style="width: 50%; padding: 4px 0;" id="anh_tour_view_add">
                                             </div>
                                             <div class="form-group">
@@ -285,7 +291,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <label for="anh_tour">Ảnh tour</label>
-                                                <input type="file" class="form-control-file" id="anh_tour" name="anh_tour">
+                                                <input onchange="fileInputChange()" type="file" required class="form-control-file" id="anh_tour" name="anh_tour">
                                                 <img src="" alt="" style="width: 50%; padding: 4px 0;" id="anh_tour_view">
                                             </div>
                                             <div class="form-group">
@@ -488,6 +494,7 @@
                 // Cập nhật dữ liệu thành công, đóng modal và tải lại trang
                 $("#addTourModal").modal("hide");
                 console.log('đã vào đây 1');
+                console.log(inputFileChange)
                 $.ajax({
                     url: "http://localhost:8085/api/tour/add/image",
                     type: "POST",
@@ -495,14 +502,15 @@
                     processData: false,
                     contentType: false,
                     success: function(response){
-                        console.log('đã vào đây 2');
-                        alert("Sửa thành công !")
+                        console.log('vẫn đã vào đây 2');
                         location.reload();
                     },
                     error: function(jqXHR, textStatus, errorThrown){
                         console.log(textStatus, errorThrown);
                     }
                 });
+
+                alert("Sửa thành công !")
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 // Xử lý lỗi
@@ -560,21 +568,23 @@
                 // Cập nhật dữ liệu thành công, đóng modal và tải lại trang
                 $("#editTourModal").modal("hide");
                 console.log('đã vào đây 1');
-                $.ajax({
-                    url: "http://localhost:8085/api/tour/update/image/"+id,
-                    type: "PUT",
-                    data: formData2,
-                    processData: false,
-                    contentType: false,
-                    success: function(response){
-                        console.log('đã vào đây 2');
-                        alert("Sửa thành công !")
-                        location.reload();
-                    },
-                    error: function(jqXHR, textStatus, errorThrown){
-                        console.log(textStatus, errorThrown);
-                    }
-                });
+                if(inputFileChange) {
+                    $.ajax({
+                        url: "http://localhost:8085/api/tour/update/image/" + id,
+                        type: "PUT",
+                        data: formData2,
+                        processData: false,
+                        contentType: false,
+                        success: function (response) {
+                            console.log('đã vào đây 2');
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.log(textStatus, errorThrown);
+                        }
+                    });
+                }
+                alert("Sửa thành công !")
+                location.reload();
 
             },
             error: function(jqXHR, textStatus, errorThrown) {
@@ -602,8 +612,14 @@
         $('#deleteModal').modal('show');
     }
 
+    var inputFileChange = false;
 
+    function fileInputChange() {
+        inputFileChange = true;
+    }
     $(document).ready(function() {
+
+
 
         $("#anh_tour").change(function() {
             readURL(this);
@@ -620,12 +636,23 @@
                 { "data": "so_ngay" },
                 { "data": "ngay_khoi_hanh",
                     "render": function ( data, type, row ) {
-
                         return data;
                     }
                 },
                 { "data": "diem_den" },
-                { "data": "loai_tour" },
+                { "data": "loai_tour","render": function (data, type, row, meta) {
+                        switch (data) {
+                            case 1:
+                                return "Trong nước" ;
+                                break;
+                            case 2:
+                                return "Ngoài nước"
+                                break;
+                            default:
+                                return "Trong nước";
+                        }
+                    }
+                },
                 { "data": "diem_khoi_hanh" },
                 { "data": "trang_thai" ,
                     "render": function (data, type, row, meta) {
@@ -654,9 +681,9 @@
                 {
                     "data": null,
                     "render": function ( data, type, row ) {
-                        return '<div>'+'<button type="button" class="btn btn-primary btn-sm mx-2" data-toggle="modal" data-target="#editTourModal" onclick="editTour('+row.id+')"><i class="fa-solid fa-pen-to-square"></i></button>' +
+                        return '<div class="d-flex flex-row">'+'<button type="button" class="btn btn-primary btn-sm mx-2" data-toggle="modal" data-target="#editTourModal" onclick="editTour('+row.id+')"><i class="fa-solid fa-pen-to-square"></i></button>' +
                             '<button type="button" class="btn btn-danger btn-sm ml-2" onclick="deleteTour('+row.id+')"><i class="fa-solid fa-trash"></i></button>'+'</div>'+
-                          '<div>'+ '<a href="/admin/tourImage/'+row.id+'"  class="btn btn-sm btn-info"><i class="fa-solid fa-image"></i></a>'+
+                          '<div>'+ '<a href="/admin/tourImage/'+row.id+'"  class="btn btn-sm btn-info mx-2"><i class="fa-solid fa-image"></i></a>'+
                                     '<a href="/admin/tourStart/'+row.id+'"  class="btn btn-sm btn-info"><i class="fa-solid fa-calendar-days"></i></a>'+'</div>';
 
                     }

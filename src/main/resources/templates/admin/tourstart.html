@@ -16,7 +16,7 @@
 <body class="sb-nav-fixed">
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
     <!-- Navbar Brand-->
-    <a class="navbar-brand ps-3" href="index.html">Quản lý người dùng</a>
+    <a class="navbar-brand ps-3" href="index.html">Quản lý ngày khởi hành</a>
     <!-- Sidebar Toggle-->
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
     <!-- Navbar Search-->
@@ -49,7 +49,7 @@
                     <div class="sb-sidenav-menu-heading">Trang quản lý</div>
                     <a class="nav-link" href="tables.html">
                         <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
-                        Quản lý người dùng
+                        Quản lý ngày khởi hành
                     </a>
                     <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
                         <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
@@ -87,10 +87,10 @@
     <div id="layoutSidenav_content">
         <main>
             <div class="container-fluid px-4">
-                <h1 class="mt-4">Danh sách người dùng</h1>
+                <h1 id="id_tour_set_title" class="mt-4">Danh sách ngày khởi hành</h1>
                 <ol class="breadcrumb mb-4">
                     <li class="breadcrumb-item"><a href="index.html">Trang chủ</a></li>
-                    <li class="breadcrumb-item active">Quản lý người dùng</li>
+                    <li class="breadcrumb-item active">Quản lý ngày khởi hành</li>
                 </ol>
                 <div class="card mb-4">
                     <div class="card-header">
@@ -249,6 +249,9 @@
         let currentUrl = window.location.href;
 
         let tour_id = currentUrl.split("/").pop();
+
+        document.getElementById('id_tour_set_title').innerHTML = "Danh sách ngày khởi hành của tour id : " +tour_id;
+
         $('#datatablesSimple').DataTable({
             "ajax": {
                 "url": "http://localhost:8085/api/tour/StartDate/"+tour_id,
