@@ -11,7 +11,7 @@
 	<artifactId>HoangMinhWeb</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>HoangMinhWeb</name>
-	<description>Web du lich hoang minh</description>
+	<description>Web du lich sang chanh</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
