@@ -123,14 +123,14 @@
 							<div class="form-row">
 								<div class="control-group col-sm-6">
 									<input type="text" class="form-control p-4" id="username"
-										disabled="disabled" name="username" th:value="${user.username}"
+										disabled="disabled" name="username" th:value="${user != null ? user.username : ''}"
 										placeholder="Tên người dùng" required="required"
 										data-validation-required-message="Vui lòng nhập tên người dùng" />
 									<p class="help-block text-danger"></p>
 								</div>
 								<div class="control-group col-sm-6">
 									<input type="text" class="form-control p-4" name="ho_ten" id="email" placeholder="Họ tên"
-										required="required" th:value="${user.ho_ten}"
+										required="required" th:value="${user != null ? user.ho_ten : ''}"
 										data-validation-required-message="Vui lòng nhập họ và tên"
 										disabled="disabled" />
 									<p class="help-block text-danger"></p>
@@ -139,7 +139,7 @@
 							<div class="control-group">
 								<input type="email" class="form-control p-4" name="email"
 									id="subjectd" placeholder="Email" required="required"
-									disabled="disabled" th:value="${user.email}"
+									disabled="disabled" th:value="${user != null ? user.email : ''}"
 									data-validation-required-message="Vui lòng nhập email" />
 								<p class="help-block text-danger"></p>
 							</div>
@@ -147,14 +147,14 @@
 								<div class="control-group col-sm-6">
 									<input type="tel" class="form-control p-4" id="name" name="sdt"
 										placeholder="Số điện thoại" required="required"
-										disabled="disabled" th:value="${user.sdt}"
+										disabled="disabled" th:value="${user != null ? user.sdt : ''}"
 										data-validation-required-message="Vui lòng nhập số điện thoại" />
 									<p class="help-block text-danger"></p>
 								</div>
 								<div class="control-group col-sm-6">
 									<div class="mb-3 mb-md-0">
 										<select class="custom-select px-4" id="select-gender" disabled="disabled"
-											name="gioi_tinh" th:value="${user.gioi_tinh}" style="height: 47px;">
+											name="gioi_tinh" th:value="${user != null ? user.gioi_tinh : ''}" style="height: 47px;">
 											<option value="Nam">Nam</option>
 											<option value="Nữ">Nữ</option>
 										</select>
@@ -164,7 +164,7 @@
 							<div class="control-group">
 								<input type="text" class="form-control p-4" name="dia_chi"
 									id="subject" placeholder="Địa chỉ" required="required"
-									disabled="disabled" th:value="${user.dia_chi}"
+									disabled="disabled" th:value="${user != null ? user.dia_chi : ''}"
 									data-validation-required-message="Vui lòng nhập địa chỉ" />
 								<p class="help-block text-danger"></p>
 							</div>

@@ -57,5 +57,4 @@ public class Tour {
 	
 	private Long gia_tour;
 	
-	
 }

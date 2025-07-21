@@ -19,17 +19,17 @@ public class AuthController {
 	UserService userService;
 
 	@PostMapping("/login")
-	public ResponseDTO login(@RequestBody LoginDTO info) {
+	public ResponseDTO<Object> login(@RequestBody LoginDTO info) {
 		if(this.userService.adminLogin(info)) {
-			return new ResponseDTO("Thành công", SessionUtilities.getAdmin());
+			return new ResponseDTO<>(true, "Thành công", SessionUtilities.getAdmin());
 		}
-		return new ResponseDTO("Thông tin đăng nhập không hợp lệ", null);
+		return new ResponseDTO<>(false, "Thông tin đăng nhập không hợp lệ", null);
 	}
 
 	@GetMapping("/logout")
-	public ResponseDTO logout() {
+	public ResponseDTO<Object> logout() {
 		this.userService.adminLogout();
-		return new ResponseDTO("Đăng xuất thành công",null);
+		return new ResponseDTO<>(true, "Đăng xuất thành công", null);
 	}
 
 }

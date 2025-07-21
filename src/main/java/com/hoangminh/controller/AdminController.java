@@ -5,6 +5,7 @@ import com.hoangminh.utilities.SessionUtilities;
 import jakarta.servlet.annotation.HandlesTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +16,14 @@ public class AdminController {
 
     @Autowired
     UserService userService;
+
+    @GetMapping("/index")
+    public String dashboard(Model model) {
+        if(!this.userService.checkAdminLogin()) {
+            return "redirect:/admin/login";
+        }
+        return "admin/index";
+    }
 
     @GetMapping("/user")
     public String userManage() {
@@ -60,6 +69,11 @@ public class AdminController {
             return "redirect:/admin/login";
         }
         return "admin/tourImage";
+    }
+
+    @GetMapping("/upload-test")
+    public String uploadTest() {
+        return "admin/upload-test";
     }
 
     @GetMapping("/logout")

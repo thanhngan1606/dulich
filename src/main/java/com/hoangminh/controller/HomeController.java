@@ -214,7 +214,7 @@ public class HomeController {
 	ModelAndView account() {
 		ModelAndView mdv = new ModelAndView();
 
-		if(SessionUtilities.getUsername()==null) {
+		if(SessionUtilities.getUsername()==null || SessionUtilities.getUser()==null) {
 			ModelAndView loginView = new ModelAndView("redirect:/login");
 			return loginView;
 		}

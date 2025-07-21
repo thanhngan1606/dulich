@@ -45,4 +45,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long>{
 			+ " FROM Booking  b  JOIN Tour t ON b.tour_id = t.id JOIN User u ON b.user_id = u.id WHERE b.id = :id")
 	BookingDetailDTO findBookingDetailById(@Param("id") Long id);
 
+
+
 }

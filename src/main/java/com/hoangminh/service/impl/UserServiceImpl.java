@@ -126,7 +126,13 @@ public class UserServiceImpl implements UserService {
 
 		log.info("userCheck:{}",userCheck.getUsername());
 
-		if(BCrypt.checkpw(user.getPassword(), userCheck.getPassword())) {
+		// Kiểm tra password không null trước khi sử dụng BCrypt
+		if(userCheck.getPass() == null || userCheck.getPass().isEmpty()) {
+			log.error("Password của user {} bị null hoặc empty", userCheck.getUsername());
+			return false;
+		}
+
+		if(BCrypt.checkpw(user.getPassword(), userCheck.getPass())) {
 			SessionUtilities.setUsername(userCheck.getUsername());
 			SessionUtilities.setUser(ConvertUserToDto.convertUsertoDto(userCheck));
 
@@ -150,10 +156,10 @@ public class UserServiceImpl implements UserService {
 		User user= new User();
 		user.setUsername(newUser.getUsername());
 		user.setHo_ten(newUser.getHo_ten());
-		user.setPassword(BCrypt.hashpw(newUser.getPassword(), BCrypt.gensalt(10)));
+		user.setPass(BCrypt.hashpw(newUser.getPassword(), BCrypt.gensalt(10)));
 		user.setEmail(newUser.getEmail());
 		user.setGioi_tinh(newUser.getGioi_tinh());
-		user.setRole(1);
+		user.setRole_id(2); // 2 = USER (khách - mặc định cho user mới)
 		user.setDia_chi(newUser.getDia_chi());
 		user.setSdt(newUser.getSdt());
 
@@ -173,8 +179,14 @@ public class UserServiceImpl implements UserService {
 
 			User user = this.userRepository.findById(user_id).get();
 
-			if(BCrypt.checkpw(changePasswordDTO.getOldPassword(),user.getPassword()) && changePasswordDTO.getNewPassword()!=null) {
-				user.setPassword(BCrypt.hashpw(changePasswordDTO.getNewPassword(), BCrypt.gensalt(10)));
+			// Kiểm tra password không null trước khi sử dụng BCrypt
+			if(user.getPass() == null || user.getPass().isEmpty()) {
+				log.error("Password của user {} bị null hoặc empty", user.getUsername());
+				return false;
+			}
+
+			if(BCrypt.checkpw(changePasswordDTO.getOldPassword(),user.getPass()) && changePasswordDTO.getNewPassword()!=null) {
+				user.setPass(BCrypt.hashpw(changePasswordDTO.getNewPassword(), BCrypt.gensalt(10)));
 				this.userRepository.save(user);
 				return true;
 			}
@@ -214,7 +226,13 @@ public class UserServiceImpl implements UserService {
 
 		log.info("userCheck:{}",userCheck.getUsername());
 
-		if(BCrypt.checkpw(user.getPassword(), userCheck.getPassword()) && userCheck.getRole()==0) {
+		// Kiểm tra password không null trước khi sử dụng BCrypt
+		if(userCheck.getPass() == null || userCheck.getPass().isEmpty()) {
+			log.error("Password của admin {} bị null hoặc empty", userCheck.getUsername());
+			return false;
+		}
+
+		if(BCrypt.checkpw(user.getPassword(), userCheck.getPass()) && (userCheck.getRole_id()==1 || userCheck.getRole_id()==3)) { // 1 = ADMIN, 3 = MANAGER
 
 			SessionUtilities.setAdmin(ConvertUserToDto.convertUsertoDto(userCheck));
 
@@ -241,7 +259,7 @@ public class UserServiceImpl implements UserService {
 	public boolean resetPass(Long id) {
 		User user = this.userRepository.findById(id).get();
 
-		user.setPassword(BCrypt.hashpw("123@123a", BCrypt.gensalt(10)));
+		user.setPass(BCrypt.hashpw("123@123a", BCrypt.gensalt(10)));
 
 		if(this.userRepository.save(user)!=null) {
 			return true;

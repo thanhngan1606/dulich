@@ -21,7 +21,7 @@ import lombok.Setter;
 @Table(name = "user")
 public class User {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	// Không dùng AUTO_INCREMENT, sẽ tự set bằng tay
 	private Long id;
 	
 	private String username;
@@ -29,7 +29,7 @@ public class User {
 	private String ho_ten;
 	
 	@JsonIgnore
-	private String password;
+	private String pass; // Đổi từ password thành pass để phù hợp với database
 	
 	private String gioi_tinh;
 	
@@ -39,5 +39,7 @@ public class User {
 	
 	private String dia_chi;
 
-	private Integer role;
+	private Integer role_id; // 1 = admin, 2 = user, 3 = manager
+	
+	private Date created_at;
 }

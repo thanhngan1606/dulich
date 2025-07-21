@@ -2,6 +2,7 @@ package com.hoangminh.repository;
 
 import org.springframework.data.domain.Pageable;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -59,4 +60,6 @@ public interface TourRepository extends JpaRepository<Tour, Long>,JpaSpecificati
 	boolean existsBookingByTourId(@Param("tourId") Long tourId);
 
 	Tour findFirstByOrderByIdDesc();
+
+
 }

@@ -49,5 +49,4 @@ public class Booking {
     public void onCreate() {
     	this.booking_at = new Date();
     }
-    
 }

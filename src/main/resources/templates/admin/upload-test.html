@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Upload Ảnh</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .upload-form {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .preview {
+            margin: 20px 0;
+        }
+        .preview img {
+            max-width: 300px;
+            max-height: 300px;
+        }
+        .result {
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        .success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Upload Ảnh lên Cloudinary</h1>
+    
+    <div class="upload-form">
+        <h3>Chọn file ảnh để upload</h3>
+        <input type="file" id="imageFile" accept="image/*">
+        <br><br>
+        <input type="text" id="folder" placeholder="Folder (tùy chọn)">
+        <br><br>
+        <button onclick="uploadImage()">Upload Ảnh</button>
+    </div>
+    
+    <div class="preview" id="preview" style="display: none;">
+        <h3>Preview:</h3>
+        <img id="previewImg" src="" alt="Preview">
+    </div>
+    
+    <div class="result" id="result" style="display: none;">
+        <h3>Kết quả:</h3>
+        <div id="resultContent"></div>
+    </div>
+
+    <script>
+        function uploadImage() {
+            const fileInput = document.getElementById('imageFile');
+            const folderInput = document.getElementById('folder');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Vui lòng chọn file ảnh!');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            if (folderInput.value.trim()) {
+                formData.append('folder', folderInput.value.trim());
+            }
+            
+            // Hiển thị preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('preview').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+            
+            // Upload
+            fetch('/api/upload/image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                const resultContent = document.getElementById('resultContent');
+                
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    resultContent.innerHTML = `
+                        <p><strong>Upload thành công!</strong></p>
+                        <p><strong>Public ID:</strong> ${data.data.publicId}</p>
+                        <p><strong>URL:</strong> <a href="${data.data.url}" target="_blank">${data.data.url}</a></p>
+                        <p><strong>Secure URL:</strong> <a href="${data.data.secureUrl}" target="_blank">${data.data.secureUrl}</a></p>
+                        <img src="${data.data.secureUrl}" style="max-width: 200px; max-height: 200px;" alt="Uploaded Image">
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultContent.innerHTML = `<p><strong>Lỗi:</strong> ${data.message}</p>`;
+                }
+                
+                resultDiv.style.display = 'block';
+            })
+            .catch(error => {
+                const resultDiv = document.getElementById('result');
+                const resultContent = document.getElementById('resultContent');
+                
+                resultDiv.className = 'result error';
+                resultContent.innerHTML = `<p><strong>Lỗi:</strong> ${error.message}</p>`;
+                resultDiv.style.display = 'block';
+            });
+        }
+    </script>
+</body>
+</html> 

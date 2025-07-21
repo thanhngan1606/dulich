@@ -25,22 +25,22 @@ public class TinTucController {
     private TinTucService tinTucService;
 
     @GetMapping("/getAllPage")
-    public ResponseDTO getAllPage(@RequestParam(value = "pageSize",defaultValue = "10") Integer pageSize,
+    public ResponseDTO<Object> getAllPage(@RequestParam(value = "pageSize",defaultValue = "10") Integer pageSize,
                                   @RequestParam(value = "pageIndex") Integer pageIndex) {
         Page<TinTuc> page = this.tinTucService.getAllPage(PageRequest.of(pageSize,pageIndex));
 
-        return new ResponseDTO("Thành Công",page.getContent());
+        return new ResponseDTO<>(true, "Thành Công", page.getContent());
     }
 
     @GetMapping("/{id}")
-    public ResponseDTO getOnePage(@PathVariable("id") Long id) {
+    public ResponseDTO<Object> getOnePage(@PathVariable("id") Long id) {
 
-        return new ResponseDTO("Thành công",this.tinTucService.findOnePage(id));
+        return new ResponseDTO<>(true, "Thành công", this.tinTucService.findOnePage(id));
 
     }
 
     @PostMapping("/add")
-    public ResponseDTO addNewTintuc(@RequestBody TinTuc tinTuc, @RequestParam("image")MultipartFile image) {
+    public ResponseDTO<Object> addNewTintuc(@RequestBody TinTuc tinTuc, @RequestParam("image")MultipartFile image) {
 
         String uploadDir = "/upload";
         try {
@@ -51,19 +51,19 @@ public class TinTucController {
             // Lưu thông tin của tour vào cơ sở dữ liệu
             tinTuc.setHinh_anh(fileName);
 
-            return new ResponseDTO("Thành công",this.tinTucService.createOnePage(tinTuc));
+            return new ResponseDTO<>(true, "Thành công", this.tinTucService.createOnePage(tinTuc));
 
         } catch (IOException e) {
             // Xử lý exception
             log.info("Lỗi upload file: {}",e.getMessage());
         }
 
-        return new ResponseDTO("Thất bại",null);
+        return new ResponseDTO<>(false, "Thất bại", null);
 
     }
 
     @PutMapping(value = "/update/{id}")
-    public ResponseDTO updateOneTinTuc(@PathVariable("id") Long id,
+    public ResponseDTO<Object> updateOneTinTuc(@PathVariable("id") Long id,
                                        @RequestBody TinTuc tinTuc,
                                        @RequestParam("image") MultipartFile image) {
 
@@ -76,14 +76,14 @@ public class TinTucController {
             // Lưu thông tin của tour vào cơ sở dữ liệu
             tinTuc.setHinh_anh(fileName);
 
-            return new ResponseDTO("Thành công",this.tinTucService.updateTinTuc(tinTuc,id));
+            return new ResponseDTO<>(true, "Thành công", this.tinTucService.updateTinTuc(tinTuc,id));
 
         } catch (IOException e) {
             // Xử lý exception
             log.info("Lỗi upload file: {}",e.getMessage());
         }
 
-        return new ResponseDTO("Cập nhật hất bại",null);
+        return new ResponseDTO<>(false, "Cập nhật thất bại", null);
 
     }
 
