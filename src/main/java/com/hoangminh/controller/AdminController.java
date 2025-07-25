@@ -1,5 +1,9 @@
 package com.hoangminh.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hoangminh.service.BookingService;
+import com.hoangminh.service.TourService;
 import com.hoangminh.service.UserService;
 import com.hoangminh.utilities.SessionUtilities;
 import jakarta.servlet.annotation.HandlesTypes;
@@ -16,12 +20,26 @@ public class AdminController {
 
     @Autowired
     UserService userService;
+    @Autowired
+    TourService tourService;
+    @Autowired
+    BookingService bookingService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @GetMapping("/index")
-    public String dashboard(Model model) {
+    public String dashboard(Model model) throws JsonProcessingException {
         if(!this.userService.checkAdminLogin()) {
             return "redirect:/admin/login";
         }
+        model.addAttribute("userCount", userService.countAllUsers());
+        model.addAttribute("tourCount", tourService.countAllTours());
+        model.addAttribute("totalRevenue", bookingService.getTotalRevenue());
+        model.addAttribute("averageRating", tourService.getAverageRating());
+        // Serialize dữ liệu biểu đồ sang JSON
+        model.addAttribute("tourMonthStatsJson", objectMapper.writeValueAsString(tourService.countToursByMonth()));
+        model.addAttribute("tourSeasonStatsJson", objectMapper.writeValueAsString(tourService.countToursBySeason()));
         return "admin/index";
     }
 
@@ -49,6 +67,14 @@ public class AdminController {
             return "redirect:/admin/login";
         }
         return "admin/booking";
+    }
+
+    @GetMapping("/review")
+    public String reviewManage() {
+        if(!this.userService.checkAdminLogin()) {
+            return "redirect:/admin/login";
+        }
+        return "admin/review";
     }
 
     @GetMapping("/login")

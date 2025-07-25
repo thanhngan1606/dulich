@@ -89,7 +89,7 @@ public class HomeController {
 		}
 
 		Page<TourDTO> tourPage = this.tourService.findAllTour(ten_tour, gia_tour_from, gia_tour_to,
-				ngay_khoi_hanh_value, 1, PageRequest.of(pageIndex-1, 12));
+				ngay_khoi_hanh_value, "Tour trong nước", PageRequest.of(pageIndex-1, 12));
 
 		List<TourDTO> tours = tourPage.getContent();
 
@@ -122,7 +122,7 @@ public class HomeController {
 
 		ModelAndView mdv = new ModelAndView("user/tour2");
 
-		Page<TourDTO> tourPage = this.tourService.findAllTour(ten_tour, gia_tour_from, gia_tour_to, ngay_khoi_hanh_value, 2,
+		Page<TourDTO> tourPage = this.tourService.findAllTour(ten_tour, gia_tour_from, gia_tour_to, ngay_khoi_hanh_value, "Tour ngoài nước",
 				PageRequest.of(pageIndex-1, 12));
 
 		List<TourDTO> tours = tourPage.getContent();
@@ -150,12 +150,10 @@ public class HomeController {
 
 	@GetMapping("/login")
 	ModelAndView login() {
-		if(this.userService.checkLogin()) {
-			return this.account();
+	if(SessionUtilities.getUsername() != null && SessionUtilities.getUser() != null) {
+			return new ModelAndView("redirect:/account");
 		}
-		ModelAndView mdv = new ModelAndView("user/login");
-
-		return mdv;
+		return new ModelAndView("user/login");
 	}
 
 	@GetMapping("/register")
@@ -175,17 +173,16 @@ public class HomeController {
 	ModelAndView loginAction(LoginDTO login) {
 
 
-		ModelAndView mdv = new ModelAndView("redirect:/account");
-
 		if(!this.userService.login(login)) {
 			ModelAndView mdvErr = new ModelAndView("user/login");
 			mdvErr.addObject("err", "Sai thông tin đăng nhập");
 			return mdvErr;
 		}
-
-		mdv.addObject("user", SessionUtilities.getUser());
-
-		return mdv;
+		// Kiểm tra role
+		if (SessionUtilities.getUser() != null && "ADMIN".equals(SessionUtilities.getUser().getRole())) {
+			return new ModelAndView("redirect:/admin/index");
+		}
+		return new ModelAndView("redirect:/account");
 	}
 
 	@PostMapping("/register")
@@ -318,7 +315,7 @@ public class HomeController {
 							   @RequestParam("so_luong_nguoi") Integer so_luong_nguoi,
 							   @RequestParam("ngay_khoi_hanh") String ngay_khoi_hanh,
 							   @RequestParam("ghi_chu") String ghi_chu,
-							   @RequestParam("pt_thanh_toan") Integer pt_thanh_toan) {
+							   @RequestParam("pt_thanh_toan") String pt_thanh_toan) {
 
 
 		ModelAndView mdv = new ModelAndView();
@@ -411,11 +408,9 @@ public class HomeController {
 		BookingDTO bookingDTO = this.bookingService.getBookingById(id);
 
 		if(bookingDTO!=null) {
-
-			if(bookingDTO.getTrang_thai()==0 || bookingDTO.getTrang_thai()==1){
-				this.bookingService.approveBooking(id,4);
+			if("Đang xử lý".equals(bookingDTO.getTrang_thai()) || "Đã thanh toán".equals(bookingDTO.getTrang_thai())){
+				this.bookingService.approveBooking(id, "Đã hủy");
 			}
-
 		}else {
 			return new ModelAndView("redirect:/error");
 		}

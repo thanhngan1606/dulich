@@ -2,6 +2,8 @@ package com.hoangminh.dto;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,19 +23,20 @@ public class BookingDTO {
     
     private Integer so_luong_nguoi;
     
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date ngay_khoi_hanh;
     
     private Long tong_tien;
     
-    private Integer trang_thai;
+    private String trang_thai;
 
-    private Integer pt_thanh_toan;
+    private String pt_thanh_toan;
 
     private String ghi_chu;
 
     private Date booking_at;
 
-    public BookingDTO(Long id, Long user_id, Long tour_id, String ten_tour, Integer so_luong_nguoi, Date ngay_khoi_hanh, Long tong_tien, Integer trang_thai, Integer pt_thanh_toan, String ghi_chu, Date booking_at) {
+    public BookingDTO(Long id, Long user_id, Long tour_id, String ten_tour, Integer so_luong_nguoi, Date ngay_khoi_hanh, Long tong_tien, String trang_thai, String pt_thanh_toan, String ghi_chu, Date booking_at) {
         this.id = id;
         this.user_id = user_id;
         this.tour_id = tour_id;

@@ -37,11 +37,11 @@ public class Booking {
     
     private Long tong_tien;
     
-    private Integer trang_thai;
+    private String trang_thai;
 	
     private Date booking_at;
 
-    private Integer pt_thanh_toan;
+    private String pt_thanh_toan;
 
     private String ghi_chu;
 

@@ -48,7 +48,7 @@ public class TourController {
                                   @RequestParam(value="gia_tour_from",required = false) Long gia_tour_from,
                                   @RequestParam(value="gia_tour_to",required = false) Long gia_tour_to,
                                   @RequestParam(value="ngay_khoi_hanh",required = false) Date ngay_khoi_hanh,
-                                  @RequestParam(value="loai_tour",required = false) Integer loai_tour,
+                                  @RequestParam(value="loai_tour",required = false) String loai_tour,
                                   @RequestParam(value = "pageSize",defaultValue = "10") Integer pageSize,
                                   @RequestParam(value = "pageIndex") Integer pageIndex
                                                                                         ) {
@@ -130,12 +130,7 @@ public class TourController {
         if(!this.userService.checkAdminLogin()) {
             return new ResponseDTO<>(false, "Không có quyền truy cập", null);
         }
-
-        String[] dataGet = tourDTO.getDiem_den().split("/");
-        tourDTO.setDiem_den(dataGet[0]);
-        tourDTO.setNgay_khoi_hanh(DateUtils.convertStringToDate(dataGet[1]));
-        tourDTO.setNgay_ket_thuc(DateUtils.convertStringToDate(dataGet[2]));
-
+        // Không split diem_den nữa, nhận trực tiếp các trường từ FE
         Tour tour = this.tourService.addTour(tourDTO);
         if(tour!=null) {
             return new ResponseDTO<>(true, "Thành công", tour);
@@ -181,10 +176,8 @@ public class TourController {
             return new ResponseDTO<>(false, "Không có quyền truy cập", null);
         }
 
-        String[] dataGet = tourDTO.getDiem_den().split("/");
-        tourDTO.setDiem_den(dataGet[0]);
-        tourDTO.setNgay_khoi_hanh(DateUtils.convertStringToDate(dataGet[1]));
-        tourDTO.setNgay_ket_thuc(DateUtils.convertStringToDate(dataGet[2]));
+        // Không split diem_den nữa, nhận trực tiếp các trường từ FE
+        // Nếu cần validate, kiểm tra null hoặc định dạng ở đây
         Tour updateTour = this.tourService.updateTour(tourDTO,id);
         if(updateTour!=null) {
             return new ResponseDTO<>(true, "Thành công", updateTour);

@@ -10,7 +10,10 @@ import com.hoangminh.utilities.ConvertUserToDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
+import java.time.LocalDate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/api/user")
@@ -97,5 +100,33 @@ public class UserController {
         }
         return new ResponseDTO<>(false, "Khôi phục mật khẩu mặc định thất bại", null);
 
+    }
+
+    @PostMapping("")
+    public ResponseDTO<Object> addUser(@RequestBody com.hoangminh.dto.RegisterDTO registerDTO) {
+        if(!this.userService.checkAdminLogin()) {
+            return new ResponseDTO<>(false, "Không có quyền truy cập", null);
+        }
+        boolean result = this.userService.register(registerDTO);
+        if(result) {
+            return new ResponseDTO<>(true, "Thêm người dùng thành công", null);
+        }
+        return new ResponseDTO<>(false, "Thêm người dùng thất bại (trùng username hoặc email)", null);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchUsers(
+        @RequestParam(required = false) String username,
+        @RequestParam(required = false) String email,
+        @RequestParam(required = false) String phone,
+        @RequestParam(required = false) String role,
+        @RequestParam(required = false) String status,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createdFrom,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createdTo,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<User> result = userService.searchUsers(username, email, phone, role, status, createdFrom, createdTo, PageRequest.of(page, size));
+        return ResponseEntity.ok(result);
     }
 }

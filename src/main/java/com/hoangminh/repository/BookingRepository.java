@@ -22,7 +22,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long>{
 			+ " WHERE ( :trang_thai IS NULL OR b.trang_thai = :trang_thai ) "
 			+ " AND ( :ten_tour IS NULL OR :ten_tour = '' OR t.ten_tour LIKE %:ten_tour% ) "
 			+ " ORDER BY b.id ")
-	public Page<BookingDTO> findAllBooking(@Param("trang_thai") Integer trang_thai,@Param("ten_tour") String ten_tour,Pageable pageable);
+	public Page<BookingDTO> findAllBooking(@Param("trang_thai") String trang_thai,@Param("ten_tour") String ten_tour,Pageable pageable);
 	
 	@Query(value = "SELECT new com.hoangminh.dto.BookingDTO(b.id,b.user_id,b.tour_id,t.ten_tour,b.so_luong_nguoi,b.ngay_khoi_hanh,b.tong_tien,b.trang_thai,b.pt_thanh_toan,b.ghi_chu,b.booking_at) "
 			+ " FROM Booking  b JOIN User u ON b.user_id = u.id JOIN Tour t ON b.tour_id = t.id  WHERE b.user_id = :userId")
@@ -30,7 +30,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long>{
 
 
 	@Query(value = "SELECT new com.hoangminh.dto.BookingDTO(b.id,b.user_id,b.tour_id,t.ten_tour,b.so_luong_nguoi,b.ngay_khoi_hanh,b.tong_tien,b.trang_thai,b.pt_thanh_toan,b.ghi_chu,b.booking_at) "
-			+ " FROM Booking  b JOIN User u ON b.user_id = u.id JOIN Tour t ON b.tour_id = t.id  WHERE b.user_id = :userId AND b.trang_thai !=3 AND b.trang_thai!=4")
+			+ " FROM Booking  b JOIN User u ON b.user_id = u.id JOIN Tour t ON b.tour_id = t.id  WHERE b.user_id = :userId AND b.trang_thai != 'Đã hoàn thành' AND b.trang_thai != 'Đã hủy'")
 	List<BookingDTO> checkBookingByUserId(@Param("userId")Long userId);
 
 	@Query(value = "SELECT new com.hoangminh.dto.BookingDTO(b.id,b.user_id,b.tour_id,t.ten_tour,b.so_luong_nguoi,b.ngay_khoi_hanh,b.tong_tien,b.trang_thai,b.pt_thanh_toan,b.ghi_chu,b.booking_at) "
@@ -45,6 +45,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long>{
 			+ " FROM Booking  b  JOIN Tour t ON b.tour_id = t.id JOIN User u ON b.user_id = u.id WHERE b.id = :id")
 	BookingDetailDTO findBookingDetailById(@Param("id") Long id);
 
+	@Query("SELECT SUM(b.tong_tien) FROM Booking b WHERE b.trang_thai = 'Đã hoàn thành'")
+	Double sumTotalRevenue();
 
 
 }

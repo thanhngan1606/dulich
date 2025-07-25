@@ -21,14 +21,14 @@ public interface TourRepository extends JpaRepository<Tour, Long>,JpaSpecificati
 			+ " WHERE (:ten_tour IS NULL OR :ten_tour='' OR t.ten_tour LIKE CONCAT('%', :ten_tour, '%'))"
 			+ " AND ( :loai_tour IS NULL OR t.loai_tour = :loai_tour )"
 			+ " AND ( :ngay_khoi_hanh IS NULL OR t.ngay_khoi_hanh = :ngay_khoi_hanh )"
-			+ " AND ( :gia_tour_from IS NULL OR  :gia_tour_to IS NULL OR (t.gia_tour BETWEEN :gia_tour_from AND :gia_tour_to)) AND t.trang_thai=1 "
+			+ " AND ( :gia_tour_from IS NULL OR  :gia_tour_to IS NULL OR (t.gia_tour BETWEEN :gia_tour_from AND :gia_tour_to)) AND t.trang_thai = 'Đang hoạt động' "
 			+ " ORDER BY t.id ")
 	Page<TourDTO> findAll(
 			@Param("ten_tour") String ten_tour,
 			@Param("gia_tour_from") Long gia_tour_from,
 			@Param("gia_tour_to") Long gia_tour_to,
 			@Param("ngay_khoi_hanh") Date ngay_khoi_hanh,
-			@Param("loai_tour") Integer loai_tour,
+			@Param("loai_tour") String loai_tour,
 			Pageable pageable
 			);
 
@@ -44,7 +44,7 @@ public interface TourRepository extends JpaRepository<Tour, Long>,JpaSpecificati
 			@Param("gia_tour_from") Long gia_tour_from,
 			@Param("gia_tour_to") Long gia_tour_to,
 			@Param("ngay_khoi_hanh") Date ngay_khoi_hanh,
-			@Param("loai_tour") Integer loai_tour,
+			@Param("loai_tour") String loai_tour,
 			Pageable pageable
 	);
 	
@@ -61,5 +61,10 @@ public interface TourRepository extends JpaRepository<Tour, Long>,JpaSpecificati
 
 	Tour findFirstByOrderByIdDesc();
 
+	@Query("SELECT MONTH(t.ngay_khoi_hanh), YEAR(t.ngay_khoi_hanh), COUNT(t) FROM Tour t GROUP BY YEAR(t.ngay_khoi_hanh), MONTH(t.ngay_khoi_hanh)")
+	List<Object[]> countToursByMonth();
+
+	@Query("SELECT t.loai_tour, COUNT(t) FROM Tour t GROUP BY t.loai_tour")
+	List<Object[]> countToursBySeason();
 
 }

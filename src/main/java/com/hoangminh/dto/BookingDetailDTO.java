@@ -26,15 +26,15 @@ public class BookingDetailDTO {
 
     private Long tong_tien;
 
-    private Integer trang_thai;
+    private String trang_thai;
 
-    private Integer pt_thanh_toan;
+    private String pt_thanh_toan;
 
     private String ghi_chu;
 
     private Date booking_at;
 
-    public BookingDetailDTO(Long id, Long user_id,String ho_ten,String sdt, Long tour_id, String ten_tour, Integer so_luong_nguoi, Date ngay_khoi_hanh, Long tong_tien, Integer trang_thai, Integer pt_thanh_toan, String ghi_chu, Date booking_at) {
+    public BookingDetailDTO(Long id, Long user_id,String ho_ten,String sdt, Long tour_id, String ten_tour, Integer so_luong_nguoi, Date ngay_khoi_hanh, Long tong_tien, String trang_thai, String pt_thanh_toan, String ghi_chu, Date booking_at) {
         this.id = id;
         this.user_id = user_id;
         this.tour_id = tour_id;

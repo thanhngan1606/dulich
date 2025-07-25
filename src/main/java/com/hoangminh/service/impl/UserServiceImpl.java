@@ -12,6 +12,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import jakarta.persistence.criteria.Predicate;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.hoangminh.controller.HomeController;
@@ -146,7 +151,6 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public boolean register(RegisterDTO newUser) {
-
 		User userCheckByUserName = this.findUserByUsername(newUser.getUsername());
 		User userCheckByEmail = this.userRepository.getUserByEmail(newUser.getEmail());
 		if(userCheckByUserName!=null || userCheckByEmail!=null) {
@@ -154,6 +158,11 @@ public class UserServiceImpl implements UserService {
 		}
 
 		User user= new User();
+		// Gán id thủ công
+		Long maxId = userRepository.findMaxId();
+		if (maxId == null) maxId = 0L;
+		user.setId(maxId + 1);
+
 		user.setUsername(newUser.getUsername());
 		user.setHo_ten(newUser.getHo_ten());
 		user.setPass(BCrypt.hashpw(newUser.getPassword(), BCrypt.gensalt(10)));
@@ -163,13 +172,12 @@ public class UserServiceImpl implements UserService {
 		user.setDia_chi(newUser.getDia_chi());
 		user.setSdt(newUser.getSdt());
 
-
 		return this.saveUser(user);
 	}
 
 	@Override
 	public boolean checkLogin() {
-		return SessionUtilities.getUsername()!=null;
+		return SessionUtilities.getUsername() != null && SessionUtilities.getUser() != null;
 	}
 
 	@Override
@@ -266,6 +274,34 @@ public class UserServiceImpl implements UserService {
 		}
 
 		return false;
+	}
+
+	@Override
+	public Page<User> searchUsers(String username, String email, String phone, String role, String status, LocalDate createdFrom, LocalDate createdTo, Pageable pageable) {
+		Specification<User> spec = (root, query, cb) -> {
+			List<Predicate> predicates = new ArrayList<>();
+			if (username != null && !username.isEmpty())
+				predicates.add(cb.like(root.get("username"), "%" + username + "%"));
+			if (email != null && !email.isEmpty())
+				predicates.add(cb.like(root.get("email"), "%" + email + "%"));
+			if (phone != null && !phone.isEmpty())
+				predicates.add(cb.like(root.get("sdt"), "%" + phone + "%"));
+			if (role != null && !role.isEmpty())
+				predicates.add(cb.equal(root.get("role"), role));
+			if (status != null && !status.isEmpty())
+				predicates.add(cb.equal(root.get("status"), status));
+			if (createdFrom != null)
+				predicates.add(cb.greaterThanOrEqualTo(root.get("createdAt"), createdFrom.atStartOfDay()));
+			if (createdTo != null)
+				predicates.add(cb.lessThanOrEqualTo(root.get("createdAt"), createdTo.atTime(23,59,59)));
+			return cb.and(predicates.toArray(new Predicate[0]));
+		};
+		return userRepository.findAll(spec, pageable);
+	}
+
+	@Override
+	public long countAllUsers() {
+		return userRepository.count();
 	}
 
 

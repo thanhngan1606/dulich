@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import io.micrometer.common.lang.Nullable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -40,20 +42,22 @@ public class Tour {
 	private String noi_dung_tour;
 	
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date ngay_khoi_hanh;
 
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date ngay_ket_thuc;
 	
 	private String diem_den;
 	
-	private Integer loai_tour;
+	private String loai_tour;
 	
 	private String anh_tour;
 	
 	private String diem_khoi_hanh;
 	
-	private Integer trang_thai;
+	private String trang_thai;
 	
 	private Long gia_tour;
 	

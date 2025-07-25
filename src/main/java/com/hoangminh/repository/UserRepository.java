@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -13,13 +14,12 @@ import org.springframework.stereotype.Repository;
 import com.hoangminh.entity.User;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long>{
+public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
 	
 		@Query(value="select u from User u " +
 				"WHERE ( :sdt IS NULL OR :sdt = '' OR u.sdt LIKE %:sdt% ) " +
 				"AND ( :email IS NULL OR :email = '' OR u.email LIKE %:email% ) " +
 				"AND ( :ho_ten IS NULL OR :ho_ten = '' OR u.ho_ten LIKE %:ho_ten% ) " +
-				"AND u.role_id IN (1, 3) " + // ADMIN và MANAGER
 				" ORDER BY u.id desc")
 		Page<User> findAll(@Param("sdt") String sdt,@Param("email") String email,@Param("ho_ten") String ho_ten,Pageable pageable);
 	
@@ -32,6 +32,8 @@ public interface UserRepository extends JpaRepository<User, Long>{
 		@Query(value="select u from User u where u.email = :email")
 		User getUserByEmail(@Param("email") String email);
 
+		@Query("SELECT MAX(u.id) FROM User u")
+		Long findMaxId();
 
 		
 }

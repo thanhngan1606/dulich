@@ -31,13 +31,13 @@ public class TourServiceImpl implements TourService {
 
 
 	@Override
-	public Page<TourDTO> findAllTour(String ten_tour,Long gia_tour_from,Long gia_tour_to,Date ngay_khoi_hanh,Integer loai_tour,Pageable pageable) {
+	public Page<TourDTO> findAllTour(String ten_tour,Long gia_tour_from,Long gia_tour_to,Date ngay_khoi_hanh,String loai_tour,Pageable pageable) {
 		Page<TourDTO> page = this.tourRepository.findAll(ten_tour, gia_tour_from, gia_tour_to,ngay_khoi_hanh, loai_tour, pageable);
 		return page;
 	}
 
 	@Override
-	public Page<TourDTO> findAllTourAdmin(String ten_tour,Long gia_tour_from,Long gia_tour_to,Date ngay_khoi_hanh,Integer loai_tour,Pageable pageable) {
+	public Page<TourDTO> findAllTourAdmin(String ten_tour,Long gia_tour_from,Long gia_tour_to,Date ngay_khoi_hanh,String loai_tour,Pageable pageable) {
 		Page<TourDTO> page = this.tourRepository.findAllAdmin(ten_tour, gia_tour_from, gia_tour_to,ngay_khoi_hanh, loai_tour, pageable);
 		return page;
 	}
@@ -127,11 +127,31 @@ public class TourServiceImpl implements TourService {
 	public boolean deleteTour(Long id) {
 		Optional<Tour> tour = this.tourRepository.findById(id);
 		if(tour.isPresent()) {
-			if(this.tourRepository.existsBookingByTourId(id)==false) {
-				this.tourRepository.deleteById(id);
-				return true;
-			}
+			// Xóa luôn, không kiểm tra booking
+			this.tourRepository.deleteById(id);
+			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public long countAllTours() {
+		return tourRepository.count();
+	}
+
+	@Override
+	public List<Object[]> countToursByMonth() {
+		return tourRepository.countToursByMonth();
+	}
+
+	@Override
+	public List<Object[]> countToursBySeason() {
+		return tourRepository.countToursBySeason();
+	}
+
+	@Override
+	public double getAverageRating() {
+		// Nếu có bảng review, thay thế bằng logic thực tế
+		return 0;
 	}
 }

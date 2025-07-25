@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.hoangminh.dto.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import java.time.LocalDate;
 
 import com.hoangminh.entity.User;
 import org.springframework.data.repository.query.Param;
@@ -26,4 +27,15 @@ public interface UserService {
 	public boolean checkAdminLogin();
 	public void adminLogout();
 	public boolean resetPass(Long id);
+	public Page<User> searchUsers(
+        String username,
+        String email,
+        String phone,
+        String role,
+        String status,
+        LocalDate createdFrom,
+        LocalDate createdTo,
+        Pageable pageable
+    );
+	public long countAllUsers();
 }
